@@ -1,4 +1,5 @@
 <?php
+// public/register_process.php
 require_once __DIR__ . '/../includes/functions.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -11,7 +12,7 @@ $username = trim($_POST['username']);
 $email = trim($_POST['email']);
 $phone = trim($_POST['phone']);
 $password = $_POST['password'];
-$role = in_array($_POST['role'], ['buyer', 'seller']) ? $_POST['role'] : 'buyer';
+$role = in_array($_POST['role'], ['buyer','seller']) ? $_POST['role'] : 'buyer';
 
 // basic validation
 if (!$name || !$username || !$email || !$phone || !$password) {
