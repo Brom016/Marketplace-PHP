@@ -1,4 +1,3 @@
-/* assets/css/style.css */
 :root {
     --green-1: #10b85c;
     --green-2: #0aa74a;
@@ -516,7 +515,7 @@ label {
     }
 }
 
-/* ========== REGISTER MULTI-STEP FORM ========== */
+/* REGISTER MULTI-STEP FORM*/
 .form-step {
     display: none;
     animation: fadeInStep 0.3s ease;

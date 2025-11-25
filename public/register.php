@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- public/register.php -->
+
 <html lang="id">
 
 <head>

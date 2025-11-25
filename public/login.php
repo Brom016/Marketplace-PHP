@@ -1,5 +1,5 @@
 <?php
-// public/login.php
+
 require_once __DIR__ . '/../includes/config.php';
 
 if (isset($_SESSION['user_id'])) {
