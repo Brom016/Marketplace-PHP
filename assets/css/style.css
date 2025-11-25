@@ -1,0 +1,565 @@
+:root {
+    --green-1: #10b85c;
+    --green-2: #0aa74a;
+    --bg: #f4fbf6;
+    --muted: #7b8794;
+    --card-shadow: 0 10px 30px rgba(16, 24, 40, 0.06);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, Arial;
+    background: var(--bg);
+    color: #0f172a;
+    min-height: 100vh;
+}
+
+.login-wrap {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    width: 100%;
+}
+
+.login-card {
+    width: 100%;
+    max-width: 1100px;
+    border-radius: 18px;
+    display: flex;
+    overflow: hidden;
+    background: #fff;
+    box-shadow: var(--card-shadow);
+}
+
+.panel {
+    width: 50%;
+    padding: 40px 48px;
+    overflow-y: auto;
+}
+
+.right-panel {
+    background: linear-gradient(180deg, var(--green-1), var(--green-2));
+    color: #fff;
+    position: relative;
+}
+
+.left-panel {
+    background: #fff;
+}
+
+.brand {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.brand-icon {
+    width: 68px;
+    height: 68px;
+    border-radius: 14px;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--green-1);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+}
+
+.brand-img {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.brand-img img {
+    width: 67px;        /* ukuran gambar */
+    height: auto;       /* biar proporsional */
+    object-fit: contain;
+}
+
+.brand h3 {
+    font-size: 18px;
+    color: #123;
+    letter-spacing: 0.2px;
+    text-align: center;
+    line-height: 1.4;
+}
+
+.brand-underline {
+    width: 100%;
+    max-width: 280px;
+    height: 6px;
+    background: var(--green-1);
+    border-radius: 6px;
+    margin-top: 6px;
+}
+
+.login-box {
+    max-width: 420px;
+    margin: 10px auto 0;
+    width: 100%;
+}
+
+.login-box h2 {
+    font-size: 22px;
+    margin-bottom: 6px;
+}
+
+.muted {
+    color: var(--muted);
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+label {
+    display: block;
+    margin-top: 14px;
+    font-weight: 600;
+    color: #111;
+    font-size: 14px;
+}
+
+.input {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border: 1px solid #eef2f6;
+    background: #fbfbfb;
+    padding: 12px;
+    border-radius: 12px;
+    margin-top: 8px;
+    width: 100%;
+}
+
+.input-icon {
+    opacity: 0.7;
+    flex-shrink: 0;
+}
+
+.input input {
+    border: 0;
+    outline: none;
+    background: transparent;
+    width: 100%;
+    font-size: 15px;
+    color: #0f172a;
+    min-width: 0;
+}
+
+.btn {
+    display: inline-block;
+    padding: 12px 18px;
+    border-radius: 12px;
+    border: 0;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 15px;
+    text-decoration: none;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+}
+
+.btn-primary {
+    background: linear-gradient(180deg, var(--green-1), #0aa34a);
+    color: white;
+    width: 100%;
+    box-shadow: 0 12px 24px rgba(10, 167, 74, 0.12);
+}
+
+.btn-outline {
+    padding: 10px 16px;
+    border-radius: 12px;
+    border: 2px solid #1fb85a;
+    color: #0f9d58;
+    background: transparent;
+    cursor: pointer;
+    margin-top: 8px;
+    display: inline-block;
+    width: 100%;
+}
+
+.or {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 18px 0;
+    color: #94a3b8;
+}
+
+.or::before,
+.or::after {
+    content: "";
+    height: 1px;
+    background: #eee;
+    flex: 1;
+    display: block;
+}
+
+.hero {
+    max-width: 420px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+
+.hero h3 {
+    color: #fff;
+    font-size: 24px;
+    margin-bottom: 12px;
+}
+
+.hero-icons {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.square {
+    width: 70px;
+    height: 70px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.08);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+}
+
+.square.small {
+    width: 54px;
+    height: 54px;
+    font-size: 24px;
+}
+
+.hero-desc {
+    color: rgba(255, 255, 255, 0.95);
+    margin-top: 10px;
+    line-height: 1.6;
+    font-size: 15px;
+}
+
+.benefits {
+    margin-top: 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.benefit {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    background: rgba(255, 255, 255, 0.08);
+    padding: 14px;
+    border-radius: 12px;
+}
+
+.b-icon {
+    width: 46px;
+    height: 46px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.06);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+}
+
+.benefit strong {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 15px;
+}
+
+.benefit .muted {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.register-box {
+    text-align: center;
+}
+
+.register-box p {
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+/* Tablet */
+@media(max-width:1024px) {
+    .login-card {
+        max-width: 900px;
+    }
+
+    .panel {
+        padding: 35px 40px;
+    }
+
+    .hero h3 {
+        font-size: 22px;
+    }
+
+    .hero-desc {
+        font-size: 14px;
+    }
+}
+
+/* tblet kecil */
+@media(max-width:900px) {
+    .login-card {
+        max-width: 750px;
+    }
+
+    .panel {
+        padding: 30px 35px;
+    }
+
+    .brand-icon {
+        width: 56px;
+        height: 56px;
+        font-size: 28px;
+    }
+
+    .brand h3 {
+        font-size: 16px;
+    }
+
+    .login-box h2 {
+        font-size: 20px;
+    }
+}
+
+/* hp landscape sama tablet */
+@media(max-width:768px) {
+    .login-wrap {
+        padding: 15px;
+        align-items: flex-start;
+        padding-top: 20px;
+    }
+
+    .login-card {
+        max-width: 100%;
+        width: 100%;
+        flex-direction: column;
+        border-radius: 16px;
+    }
+
+    .right-panel {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+        height: 0 !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        overflow: hidden !important;
+    }
+
+    .panel {
+        width: 100% !important;
+    }
+
+    .left-panel {
+        width: 100% !important;
+        padding: 30px 25px !important;
+    }
+
+    .brand {
+        margin-bottom: 20px;
+    }
+
+    .brand-icon {
+        width: 60px;
+        height: 60px;
+        font-size: 30px;
+    }
+
+    .brand h3 {
+        font-size: 17px;
+    }
+
+    .login-box {
+        margin-top: 5px;
+    }
+
+    .login-box h2 {
+        font-size: 22px;
+    }
+}
+
+/* hp potrait */
+@media(max-width:480px) {
+    .login-wrap {
+        padding: 10px;
+        padding-top: 15px;
+    }
+
+    .login-card {
+        border-radius: 14px;
+    }
+
+    .left-panel {
+        padding: 25px 20px !important;
+    }
+
+    .brand {
+        margin-bottom: 15px;
+    }
+
+    .brand-icon {
+        width: 56px;
+        height: 56px;
+        font-size: 28px;
+    }
+
+    .brand h3 {
+        font-size: 15px;
+        padding: 0 10px;
+    }
+
+    .brand-underline {
+        width: 90%;
+        max-width: 250px;
+    }
+
+    .login-box {
+        margin-top: 0;
+    }
+
+    .login-box h2 {
+        font-size: 20px;
+        margin-bottom: 8px;
+    }
+
+    label {
+        font-size: 13px;
+        margin-top: 12px;
+    }
+
+    .input {
+        padding: 10px 12px;
+    }
+
+    .input input {
+        font-size: 14px;
+    }
+
+    .btn {
+        padding: 11px 16px;
+        font-size: 14px;
+    }
+
+    .or {
+        margin: 15px 0;
+        font-size: 13px;
+    }
+
+    .register-box p {
+        font-size: 13px;
+    }
+}
+
+/* hp kecil */
+@media(max-width:360px) {
+    .login-wrap {
+        padding: 8px;
+        padding-top: 12px;
+    }
+
+    .left-panel {
+        padding: 20px 15px !important;
+    }
+
+    .brand-icon {
+        width: 52px;
+        height: 52px;
+        font-size: 26px;
+    }
+
+    .brand h3 {
+        font-size: 14px;
+    }
+
+    .login-box h2 {
+        font-size: 19px;
+    }
+
+    .input {
+        padding: 9px 10px;
+    }
+
+    .input input {
+        font-size: 13px;
+    }
+
+    .btn {
+        padding: 10px 14px;
+        font-size: 13px;
+    }
+}
+
+/* REGISTER MULTI-STEP FORM*/
+.form-step {
+    display: none;
+    animation: fadeInStep 0.3s ease;
+}
+
+.form-step.active {
+    display: block;
+}
+
+@keyframes fadeInStep {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+
+.prev-btn {
+    margin-top: 12px !important;
+}
+
+.next-btn,
+#submitRegister {
+    margin-top: 8px !important;
+}
+
+
+@media(max-width:480px) {
+    .step-indicator {
+        margin-bottom: 20px;
+    }
+
+    .step-dot {
+        width: 8px;
+        height: 8px;
+    }
+
+    .step-dot.active {
+        width: 24px;
+    }
+}
