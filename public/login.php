@@ -1,4 +1,5 @@
 <?php
+// public/login.php
 require_once __DIR__ . '/../includes/config.php';
 
 if (isset($_SESSION['user_id'])) {
@@ -24,7 +25,7 @@ $err = isset($_GET['err']) ? $_GET['err'] : null;
     <div class="login-wrap">
         <div class="login-card">
 
-            <!-- RIGHT PANEL (akan hilang di mobile) -->
+            <!-- RIGHT PANEL-->
             <div class="panel right-panel">
                 <div class="hero">
                     <div class="hero-icons">
@@ -70,20 +71,24 @@ $err = isset($_GET['err']) ? $_GET['err'] : null;
             <!-- LEFT PANEL / Login -->
             <div class="panel left-panel">
                 <div class="brand">
-                    <div class="brand-icon">🎓</div>
+                    <div class="brand-icon">
+                        <div class="brand-img   ">
+                            <img src="../assets/images/icontrs.png" alt="icon">
+                        </div>
+                    </div>
                     <h3>Marketplace Produk Mahasiswa</h3>
                     <div class="brand-underline"></div>
                 </div>
 
                 <div class="login-box">
                     <h2 class="register-box">Login</h2>
-                    
+
                     <?php if ($registered): ?>
                         <p style="color: var(--green-1); text-align: center; margin: 10px 0; font-size: 14px;">
                             ✓ Registrasi berhasil, silakan login.
                         </p>
                     <?php endif; ?>
-                    
+
                     <?php if ($err): ?>
                         <p style="color: #ef4444; text-align: center; margin: 10px 0; font-size: 14px; background: #fee; padding: 10px; border-radius: 8px;">
                             ⚠️ <?php echo htmlspecialchars($err); ?>
