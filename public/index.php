@@ -34,7 +34,16 @@ $categories = $stmt->fetchAll();
 
 // Ambil produk terbaru
 $stmt = $pdo->query("
-    SELECT p.*, a.name AS seller_name, a.username AS seller_username
+    SELECT p.*, 
+        a.name AS seller_name, 
+        a.username AS seller_username,
+        (
+            SELECT url 
+            FROM product_images 
+            WHERE product_id = p.id 
+            ORDER BY is_primary DESC, id ASC 
+            LIMIT 1
+        ) AS thumb
     FROM products p
     JOIN accounts a ON a.id = p.seller_id
     ORDER BY p.created_at DESC
@@ -54,43 +63,8 @@ $products = $stmt->fetchAll();
 
 <body>
 
-    <!-- HEADER -->
-    <div class="header">
-        <a href="#" class="logo">
-            CampusMarket
-        </a>
-        
-        <div class="search">
-            <form>
-                <input type="text" placeholder="Cari produk mahasiswa...">
-            </form>
-        </div>
+<?php include __DIR__ . "/components/header.php"; ?>
 
-        <div class="menu-right">
-
-            <!-- CART button -->
-            <a href="cart/cart.php" class="cart-btn">🛒 Keranjang</a>
-
-            <!-- CHAT BUTTON -->
-            <a href="chat/chat.php" class="chat-btn">💬 Pesan</a>
-
-            <?php if (!$user): ?>
-                <!-- USER BLM LOGIN -->
-                <div class="auth-buttons">
-                    <a href="login.php" class="btn-auth">Sign In |</a>
-                    <a href="register.php" class="btn-auth">Sign Up</a>
-                </div>
-
-            <?php else: ?>
-                <!-- USER SDH LOGIN -->
-                <div class="profile" onclick="window.location='profile/profile.php'" style="cursor:pointer;">
-                    <img src="<?= htmlspecialchars($profile_pic) ?>" alt="Profile" class="profile-img">
-                    <span><?= htmlspecialchars($user['name']) ?></span>
-                </div>
-            <?php endif; ?>
-
-        </div>
-    </div>
 
     <div class="layout">
 
@@ -140,7 +114,7 @@ $products = $stmt->fetchAll();
                     <div class="product-card">
 
                         <div class="product-image">
-                            <img src="../assets/img/default-product.jpg" width="100%">
+                            <img src="<?= $p['thumb'] ? '../uploads/products/' . $p['thumb'] : '../assets/img/default-product.jpg' ?>">
                         </div>
 
                         <h4><?= htmlspecialchars($p['name']) ?></h4>

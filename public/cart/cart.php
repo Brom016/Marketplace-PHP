@@ -22,50 +22,16 @@ if ($user && !empty($user['profile_picture'])) {
 
 <head>
     <meta charset="utf-8">
-    <title>CampusMarket — Profile</title>
+    <title>CampusMarket — Cart</title>
     <link rel="stylesheet" href="../../assets/css/main.css">
 </head>
 
 <body>
 
-    <!-- HEADER -->
-    <div class="header">
-        <a href="../index.php" class="logo">CampusMarket</a>
-
-        <div class="search">
-            <form>
-                <input type="text" placeholder="Cari produk mahasiswa...">
-            </form>
-        </div>
-
-        <div class="menu-right">
-
-            <!-- CART button -->
-            <a href="#" class="cart-btn">🛒 Keranjang</a>
-
-            <!-- CHAT BUTTON -->
-            <a href="../chat/chat.php" class="chat-btn">💬 Pesan</a>
-
-            <?php if (!$user): ?>
-                <!-- USER BLM LOGIN -->
-                <div class="auth-buttons">
-                    <a href="login.php" class="btn-auth">Sign In |</a>
-                    <a href="register.php" class="btn-auth">Sign Up</a>
-                </div>
-
-            <?php else: ?>
-                <!-- USER SDH LOGIN -->
-                <div class="profile" onclick="window.location='../profile/profile.php'" style="cursor:pointer;">
-                    <img src="<?= htmlspecialchars($profile_pic) ?>" alt="Profile" class="profile-img">
-                    <span><?= htmlspecialchars($user['name']) ?></span>
-                </div>
-            <?php endif; ?>
-
-        </div>
-    </div>
+    <?php include __DIR__ . "../../components/header.php"; ?>
 
     <center>
-        <h1>Halaman Profile</h1>
+        <h1>Halaman Cart</h1>
     </center>
 
 </body>
