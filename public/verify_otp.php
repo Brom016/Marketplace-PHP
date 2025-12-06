@@ -1,24 +1,145 @@
 <?php
 require_once __DIR__ . '/../includes/config.php';
-$sent = isset($_GET['sent']);
+
+if (isset($_SESSION['user_id'])) {
+    header("Location: index.php");
+    exit;
+}
+
+$sent  = isset($_GET['sent']);
 $email = isset($_GET['email']) ? $_GET['email'] : '';
+$err   = isset($_GET['err']) ? $_GET['err'] : null;
 ?>
 <!doctype html>
-<html>
+<html lang="id">
 
 <head>
-    <meta charset="utf-8">
-    <title>Verifikasi OTP</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Mahasiswa-Market — Verifikasi OTP</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 
 <body>
-    <h2>Verifikasi OTP</h2>
-    <?php if ($sent) echo "<p>OTP telah dikirim (cek inbox/spam).</p>"; ?>
-    <form method="post" action="verify_otp_process.php">
-        <label>Email</label><br><input type="email" name="email" value="<?php echo htmlspecialchars($email); ?>" required><br>
-        <label>OTP (6 digit)</label><br><input type="text" name="otp" required pattern="\d{6}"><br><br>
-        <button type="submit">Verifikasi</button>
-    </form>
-</body>
 
+    <div class="login-wrap">
+        <div class="login-card">
+
+            <!-- RIGHT PANEL -->
+            <div class="panel right-panel">
+                <div class="hero">
+                    <div class="hero-icons">
+                        <div class="square large">🔐</div>
+                        <div class="square large">📧</div>
+                    </div>
+
+                    <h3>Verifikasi Keamanan</h3>
+                    <p class="hero-desc">
+                        Masukkan kode OTP yang telah dikirim ke emailmu untuk melanjutkan proses.
+                        Jangan bagikan kode ini ke siapa pun.
+                    </p>
+
+                    <div class="benefits">
+
+                        <div class="benefit">
+                            <div class="b-icon">⚡</div>
+                            <div>
+                                <strong>Proses Cepat</strong>
+                                <div class="muted">Verifikasi hanya butuh beberapa detik</div>
+                            </div>
+                        </div>
+
+                        <div class="benefit">
+                            <div class="b-icon">🔒</div>
+                            <div>
+                                <strong>Keamanan Terjamin</strong>
+                                <div class="muted">Data kamu tetap aman dan terenkripsi</div>
+                            </div>
+                        </div>
+
+                        <div class="benefit">
+                            <div class="b-icon">✅</div>
+                            <div>
+                                <strong>Akses Penuh</strong>
+                                <div class="muted">Setelah verifikasi, akun siap digunakan</div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- LEFT PANEL -->
+            <div class="panel left-panel">
+                <div class="brand">
+                    <div class="brand-icon">
+                        <div class="brand-img">
+                            <img src="../assets/images/icontrs.png" alt="icon">
+                        </div>
+                    </div>
+                    <h3>Marketplace Produk Mahasiswa</h3>
+                    <div class="brand-underline"></div>
+                </div>
+
+                <div class="login-box">
+                    <h2 class="register-box">Verifikasi OTP</h2>
+
+                    <?php if ($sent): ?>
+                        <p style="color: var(--green-1); text-align: center; margin: 10px 0; font-size: 14px;">
+                            ✓ OTP berhasil dikirim, cek inbox / spam email kamu.
+                        </p>
+                    <?php endif; ?>
+
+                    <?php if ($err): ?>
+                        <p style="color: #ef4444; text-align: center; margin: 10px 0; font-size: 14px; background: #fee; padding: 10px; border-radius: 8px;">
+                            ⚠️ <?php echo htmlspecialchars($err); ?>
+                        </p>
+                    <?php endif; ?>
+
+                    <form action="verify_otp_process.php" method="POST" autocomplete="off">
+
+                        <label>Email</label>
+                        <div class="input">
+                            <span class="input-icon">📧</span>
+                            <input
+                                type="email"
+                                name="email"
+                                placeholder="Masukkan email kamu"
+                                value="<?php echo htmlspecialchars($email); ?>"
+                                required>
+                        </div>
+
+                        <label>OTP (6 digit)</label>
+                        <div class="input">
+                            <span class="input-icon">🔢</span>
+                            <input
+                                type="text"
+                                name="otp"
+                                placeholder="Masukkan 6 digit OTP"
+                                pattern="\d{6}"
+                                maxlength="6"
+                                required>
+                        </div>
+
+                        <br>
+
+                        <button class="btn btn-primary" type="submit">Verifikasi Sekarang</button>
+
+                        <div class="or"><span>atau</span></div>
+
+                        <div class="register-box">
+                            <p style="margin-bottom: 8px;">Belum menerima kode?</p>
+                            <a class="btn btn-outline" href="send_otp.php?email=<?php echo urlencode($email); ?>">
+                                Kirim ulang OTP
+                            </a>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</body>
 </html>
