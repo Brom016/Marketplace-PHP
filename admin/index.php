@@ -12,31 +12,13 @@ $total_sold = $pdo->query("SELECT COUNT(*) FROM cod_transactions WHERE status = 
 
 <div class="admin-layout">
 
-    <!-- CARDS -->
     <div class="admin-stats">
-        <div class="admin-card">
-            <h3>Total Users</h3>
-            <h1><?= $total_users ?></h1>
-        </div>
-
-        <div class="admin-card">
-            <h3>Total Products</h3>
-            <h1><?= $total_products ?></h1>
-        </div>
-
-        <div class="admin-card">
-            <h3>Total Stock</h3>
-            <h1><?= number_format($total_stock) ?></h1>
-        </div>
-
-        <div class="admin-card">
-            <h3>Sold</h3>
-            <h1><?= $total_sold ?></h1>
-        </div>
+        <div class="admin-card"><h3>Total Users</h3><h1><?= $total_users ?></h1></div>
+        <div class="admin-card"><h3>Total Products</h3><h1><?= $total_products ?></h1></div>
+       
+        <div class="admin-card"><h3>Sold</h3><h1><?= $total_sold ?></h1></div>
     </div>
 
-
-    <!-- SECTION: CHART -->
     <div class="admin-chart-box">
         <div class="section-title">📊 Grafik Statistik</div>
         <canvas id="statsChart"></canvas>
@@ -45,29 +27,13 @@ $total_sold = $pdo->query("SELECT COUNT(*) FROM cod_transactions WHERE status = 
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="../assets/js/admin_chart.js"></script>
 
 <script>
-const ctx = document.getElementById('statsChart').getContext('2d');
-
-new Chart(ctx, {
-    type: 'bar',
-    data: {
-        labels: ['Users', 'Products', 'Stock', 'Sold'],
-        datasets: [{
-            label: 'Total',
-            data: [
-                <?= $total_users ?>,
-                <?= $total_products ?>,
-                <?= $total_stock ?>,
-                <?= $total_sold ?>
-            ],
-            borderWidth: 1
-        }]
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false, 
-        scales: { y: { beginAtZero: true } }
-    }
-});
+const statsData = {
+    users: <?= $total_users ?>,
+    products: <?= $total_products ?>,
+    stock: <?= $total_stock ?>,
+    sold: <?= $total_sold ?>
+};
 </script>

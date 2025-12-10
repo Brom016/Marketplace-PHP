@@ -12,7 +12,7 @@ if (!$id) {
     die("Invalid product ID.");
 }
 
-// Hapus gambar dulu
+
 $imgStmt = $pdo->prepare("SELECT image_url FROM product_images WHERE product_id = ?");
 $imgStmt->execute([$id]);
 $images = $imgStmt->fetchAll();

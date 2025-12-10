@@ -1,6 +1,4 @@
-/* =====================================
-   GLOBAL FIX — Hilangkan scroll X
-===================================== */
+
 body {
     width: 100%;
     max-width: 100%;
@@ -10,13 +8,11 @@ body {
 }
 
 
-/* =====================================
-   HEADER FIX — selalu center, tidak ikut padding
-===================================== */
+
 .cm-header {
     width: 100%;
     background: #fff;
-    padding: 12px 0; /* tidak pakai padding kiri-kanan */
+    padding: 12px 0;
     border-bottom: 1px solid #eee;
     display: flex;
     justify-content: center;
@@ -28,7 +24,7 @@ body {
 .cm-container {
     width: 100%;
     max-width: 1400px;
-    padding-left: 15%;   /* ikut center */
+    padding-left: 15%;  
     padding-right: 15%;
     display: flex;
     align-items: center;
@@ -36,9 +32,7 @@ body {
     gap: 20px;
 }
 
-/* =====================================
-   ADMIN PAGE WRAPPER
-===================================== */
+
 .admin-layout {
     padding: 30px 50px;
     padding-left: 15%;
@@ -49,9 +43,7 @@ body {
 }
 
 
-/* =====================================
-   DASHBOARD CARDS
-===================================== */
+
 .admin-stats {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -83,9 +75,7 @@ body {
 }
 
 
-/* =====================================
-   CHART BOX
-===================================== */
+
 .admin-chart-box {
     background: #fff;
     padding: 22px;
@@ -99,18 +89,16 @@ body {
     font-weight: 600;
 }
 
-/* Grafik mengecil + tidak mepet */
+
 .admin-chart-box canvas {
     max-height: 230px !important;
     margin-top: 10px;
 }
 
 
-/* =====================================
-   SECTION TITLE
-===================================== */
+
 .section-title {
-    background: linear-gradient(90deg, #6c63ff, #924aff);
+    background: linear-gradient(90deg, #0c4e23, #4ade80);
     color: white;
     padding: 12px 16px;
     border-radius: 10px 10px 0 0;
@@ -119,9 +107,7 @@ body {
 }
 
 
-/* =====================================
-   RESPONSIVE FIX
-===================================== */
+
 @media (max-width: 1024px) {
     .cm-container,
     .admin-layout {

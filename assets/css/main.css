@@ -1,6 +1,4 @@
-/* ============================
-   GLOBAL
-============================ */
+
 body {
     margin: 0;
     padding: 0;
@@ -14,9 +12,7 @@ a {
     text-decoration: none;
 }
 
-/* ============================
-   HEADER
-============================ */
+
 .header {
     background: #ffffff;
     border-bottom: 1px solid #e0e0e0;
@@ -44,18 +40,14 @@ a {
     gap: 15px;
 }
 
-/* ============================
-   LAYOUT
-============================ */
+
 .layout {
     display: flex;
     padding: 25px 30px;
     gap: 20px;
 }
 
-/* ============================
-   SIDEBAR
-============================ */
+
 .sidebar {
     width: 220px;
     background: #fff;
@@ -89,7 +81,7 @@ a {
     background: #f0f0f0;
 }
 
-/* Promo box simple */
+
 .promo-box {
     margin-top: 20px;
     padding: 15px;
@@ -99,7 +91,7 @@ a {
     background: #fafafa;
 }
 
-/* CONTENT */
+
 .content {
     flex: 1;
 }
@@ -117,9 +109,7 @@ a {
     font-size: 22px;
 }
 
-/* ============================
-   PRODUCTS GRID
-============================ */
+
 .product-list {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -176,7 +166,7 @@ a {
     color: #666;
 }
 
-/* Profile pict */
+
 .profile {
     display: flex;
     align-items: center;

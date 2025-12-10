@@ -7,20 +7,18 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'admin') {
 }
 
 $id = $_GET['id'] ?? null;
-
 if (!$id) die("Invalid product ID.");
 
-// Ambil kategori
+
 $categories = $pdo->query("SELECT * FROM categories")->fetchAll();
 
-// Ambil produk
+
 $stmt = $pdo->prepare("SELECT * FROM products WHERE id = ?");
 $stmt->execute([$id]);
 $product = $stmt->fetch();
-
 if (!$product) die("Product not found.");
 
-// Ambil gambar
+
 $imgStmt = $pdo->prepare("SELECT * FROM product_images WHERE product_id = ?");
 $imgStmt->execute([$id]);
 $images = $imgStmt->fetchAll();
@@ -33,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stock = $_POST['stock'];
     $category_id = $_POST['category_id'];
 
-    // Update produk
+    
     $upd = $pdo->prepare("
         UPDATE products 
         SET name=?, description=?, price=?, stock=?, category_id=? 
@@ -41,73 +39,88 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     ");
     $upd->execute([$name, $desc, $price, $stock, $category_id, $id]);
 
-    // Upload gambar baru jika ada
-    if (!empty($_FILES['images']['name'][0])) {
+    
+    if (!empty($_FILES['new_images']['name'][0])) {
 
-        // hapus gambar lama
-        $pdo->prepare("DELETE FROM product_images WHERE product_id=?")->execute([$id]);
+        foreach ($_FILES['new_images']['name'] as $i => $filename) {
 
-        foreach ($_FILES['images']['name'] as $i => $filename) {
-            $tmp = $_FILES['images']['tmp_name'][$i];
-            $newName = time() . "_$filename";
+            if ($_FILES['new_images']['error'][$i] !== 0) continue;
+
+            $tmp = $_FILES['new_images']['tmp_name'][$i];
+            $cleanName = preg_replace("/[^a-zA-Z0-9.]/", "", $filename);
+
+            
+            $newName = "product_{$id}_" . uniqid() . "_" . $i . "." . pathinfo($cleanName, PATHINFO_EXTENSION);
             $path = __DIR__ . "/../uploads/products/" . $newName;
 
             move_uploaded_file($tmp, $path);
 
+            
             $pdo->prepare("
-                INSERT INTO product_images (product_id, image_url) 
-                VALUES (?, ?)
+                INSERT INTO product_images (product_id, url, is_primary)
+                VALUES (?, ?, 0)
             ")->execute([$id, $newName]);
         }
     }
 
-    header("Location: products.php");
+    header("Location: edit_product.php?id=" . $id);
     exit;
 }
-?>
 
+?>
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8">
     <title>Edit Product</title>
+
+    <link rel="stylesheet" href="../assets/css/edit_product.css">
 </head>
+
 <body>
 
 <h2>Edit Product</h2>
 
 <form method="post" enctype="multipart/form-data">
 
-    <label>Product Name:</label><br>
-    <input type="text" name="name" value="<?= htmlspecialchars($product['name']) ?>"><br><br>
+    <label>Product Name:</label>
+    <input type="text" name="name" value="<?= htmlspecialchars($product['name']) ?>">
 
-    <label>Description:</label><br>
-    <textarea name="description"><?= htmlspecialchars($product['description']) ?></textarea><br><br>
+    <label>Description:</label>
+    <textarea name="description"><?= htmlspecialchars($product['description']) ?></textarea>
 
-    <label>Price:</label><br>
-    <input type="number" name="price" value="<?= $product['price'] ?>"><br><br>
+    <label>Price:</label>
+    <input type="number" name="price" value="<?= $product['price'] ?>">
 
-    <label>Stock:</label><br>
-    <input type="number" name="stock" value="<?= $product['stock'] ?>"><br><br>
+    <label>Stock:</label>
+    <input type="number" name="stock" value="<?= $product['stock'] ?>">
 
-    <label>Category:</label><br>
+    <label>Category:</label>
     <select name="category_id">
         <?php foreach ($categories as $c): ?>
-            <option value="<?= $c['id'] ?>" <?= $c['id']==$product['category_id']?'selected':'' ?>>
+            <option value="<?= $c['id'] ?>" <?= $c['id'] == $product['category_id'] ? 'selected' : '' ?>>
                 <?= htmlspecialchars($c['name']) ?>
             </option>
         <?php endforeach; ?>
     </select>
-    <br><br>
 
-    <label>Current Images:</label><br>
-    <?php foreach ($images as $img): ?>
-        <img src="../uploads/products/<?= $img['image_url'] ?>" width="80" style="margin-right:10px;">
-    <?php endforeach; ?>
-    <br><br>
+    <label>Current Images:</label>
+    <div class="image-wrapper">
+        <?php foreach ($images as $img): ?>
+            <div class="image-box">
+                <img class="prod-thumb" src="../uploads/products/<?= $img['url'] ?>">
 
-    <label>Upload New Images (replace all):</label><br>
-    <input type="file" name="images[]" multiple><br><br>
+                <a class="delete-btn" 
+                   href="delete_image.php?id=<?= $img['id'] ?>&pid=<?= $id ?>"
+                   onclick="return confirm('Delete this image?')">
+                    Delete
+                </a>
+            </div>
+        <?php endforeach; ?>
+    </div>
+
+    <label>Add New Images:</label>
+    <input type="file" name="new_images[]" multiple>
 
     <button type="submit">Save Changes</button>
 
