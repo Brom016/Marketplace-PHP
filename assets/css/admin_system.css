@@ -1,0 +1,66 @@
+body {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+
+.user-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.1);
+}
+
+.user-table th {
+    background: #6c63ff;
+    color: white;
+    padding: 12px;
+    text-align: left;
+    font-weight: 600;
+}
+
+.user-table td {
+    padding: 12px;
+    border-bottom: 1px solid #eee;
+}
+
+.user-table tr:hover {
+    background: #f5f6ff;
+}
+
+.action-btn {
+    padding: 6px 10px;
+    border-radius: 6px;
+    text-decoration: none;
+    color: white;
+    font-size: 14px;
+}
+
+.btn-edit {
+    background: #3c91e6;
+}
+
+.btn-delete {
+    background: #e63946;
+}
+
+.btn-edit:hover {
+    background: #2878c9;
+}
+
+.btn-delete:hover {
+    background: #c22730;
+}
+
+.product-thumb {
+    width: 70px;
+    height: 70px;
+    object-fit: cover;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+

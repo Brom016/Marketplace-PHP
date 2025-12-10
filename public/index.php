@@ -2,8 +2,6 @@
 require_once "../includes/config.php";
 require_once "../includes/functions.php";
 
-
-
 // Cek login
 $user = null;
 
@@ -12,7 +10,6 @@ if (isset($_SESSION['user_id'])) {
     $stmt->execute([$_SESSION['user_id']]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 }
-
 
 // Default profile picture
 $profile_pic = "assets/img/default-profile.png";
@@ -32,23 +29,51 @@ $total_products = $stmt->fetchColumn();
 $stmt = $pdo->query("SELECT * FROM categories ORDER BY name");
 $categories = $stmt->fetchAll();
 
-// Ambil produk terbaru
-$stmt = $pdo->query("
-    SELECT p.*, 
-        a.name AS seller_name, 
-        a.username AS seller_username,
-        (
-            SELECT url 
-            FROM product_images 
-            WHERE product_id = p.id 
-            ORDER BY is_primary DESC, id ASC 
-            LIMIT 1
-        ) AS thumb
-    FROM products p
-    JOIN accounts a ON a.id = p.seller_id
-    ORDER BY p.created_at DESC
-    LIMIT 9
-");
+// Tangkap kategori dari URL
+$category_id = isset($_GET['category']) ? (int) $_GET['category'] : null;
+
+
+// === AMBIL PRODUK (SUSUNAN TIDAK BERUBAH) ===
+if ($category_id) {
+    $stmt = $pdo->prepare("
+        SELECT p.*, 
+            a.name AS seller_name, 
+            a.username AS seller_username,
+            (
+                SELECT url 
+                FROM product_images 
+                WHERE product_id = p.id 
+                ORDER BY is_primary DESC, id ASC 
+                LIMIT 1
+            ) AS thumb
+        FROM products p
+        JOIN accounts a ON a.id = p.seller_id
+        WHERE p.category_id = ?
+        ORDER BY p.created_at DESC
+        LIMIT 9
+    ");
+
+    $stmt->execute([$category_id]);
+
+} else {
+    $stmt = $pdo->query("
+        SELECT p.*, 
+            a.name AS seller_name, 
+            a.username AS seller_username,
+            (
+                SELECT url 
+                FROM product_images 
+                WHERE product_id = p.id 
+                ORDER BY is_primary DESC, id ASC 
+                LIMIT 1
+            ) AS thumb
+        FROM products p
+        JOIN accounts a ON a.id = p.seller_id
+        ORDER BY p.created_at DESC
+        LIMIT 9
+    ");
+}
+
 $products = $stmt->fetchAll();
 
 ?>
@@ -65,51 +90,54 @@ $products = $stmt->fetchAll();
 
 <?php include __DIR__ . "/components/header.php"; ?>
 
+<div class="layout">
 
-    <div class="layout">
+    <!-- SIDEBAR KATEGORI -->
+    <div class="sidebar">
 
-        <!-- SIDEBAR KATEGORI -->
-        <div class="sidebar">
+        <h3>Kategori</h3>
 
-            <h3>Kategori</h3>
+        <ul>
+            <li>
+                <a 
+                  href="index.php"
+                  class="<?= $category_id === null ? 'active' : '' ?>"
+                >
+                    Semua Kategori
+                </a>
+            </li>
 
-            <ul>
-                <li><a href="#">Semua Kategori</a></li>
+            <?php foreach ($categories as $c): ?>
+                <li>
+                    <a 
+                      href="index.php?category=<?= $c['id'] ?>"
+                      class="<?= ($category_id == $c['id']) ? 'active' : '' ?>"
+                    >
+                        <?= htmlspecialchars($c['name']) ?>
+                    </a>
+                </li>
+            <?php endforeach; ?>
+        </ul>
 
-                <?php foreach ($categories as $c): ?>
-                    <li>
-                        <a href="#">
-                            <?= htmlspecialchars($c['name']) ?>
-                        </a>
-                    </li>
-                <?php endforeach; ?>
-            </ul>
+    </div>
 
-            <!-- <div class="promo-box"> 
-                <h4>Promo Spesial!</h4>
-                <p>Diskon hingga 50% untuk produk pilihan mahasiswa</p>
-                <button>Lihat Promo</button>
+    <!-- HERO SECTION -->
+    <div class="content">
+
+        <div class="banner">
+            <h2>Selamat Datang di CampusMarket!</h2>
+            <p>Temukan produk dan jasa terbaik dari mahasiswa berbakat se-Semarang.</p>
+            <div>
+                <span><?= number_format($total_users) ?>+ Mahasiswa Aktif</span> |
+                <span><?= number_format($total_products) ?>+ Produk Tersedia</span>
             </div>
-            -->
-
         </div>
 
-        <!-- HERO SECTION -->
-        <div class="content">
+        <h3>Semua Produk</h3>
 
-            <div class="banner">
-                <h2>Selamat Datang di CampusMarket!</h2>
-                <p>Temukan produk dan jasa terbaik dari mahasiswa berbakat se-Semarang.</p>
-                <div>
-                    <span><?= number_format($total_users) ?>+ Mahasiswa Aktif</span> |
-                    <span><?= number_format($total_products) ?>+ Produk Tersedia</span>
-                </div>
-            </div>
+        <div class="product-list">
 
-            <h3>Semua Produk</h3>
-
-            <div class="product-list">
-
+            <?php if (count($products) > 0): ?>
                 <?php foreach ($products as $p): ?>
                     <div class="product-card">
 
@@ -130,18 +158,19 @@ $products = $stmt->fetchAll();
                         <div class="seller">
                             <?= htmlspecialchars($p['seller_name']) ?>
                             — <?= htmlspecialchars($p['seller_username']) ?>
-
                         </div>
 
                     </div>
                 <?php endforeach; ?>
-            </div>
+            <?php else: ?>
+                <p>Tidak ada produk pada kategori ini</p>
+            <?php endif; ?>
 
         </div>
 
     </div>
 
-
+</div>
 
 </body>
 

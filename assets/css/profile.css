@@ -6,9 +6,7 @@ body {
     font-family: Arial, sans-serif;
 }
 
-/* =====================================
-   SELLER PROFILE SECTION
-===================================== */
+/* Profile Section */
 
 .seller-profile {
     display: flex;
@@ -111,9 +109,7 @@ body {
     background: #059669;
 }
 
-/* =====================================
-   MENU TABS
-===================================== */
+/* menu */
 
 .product-section {
     max-width: 1100px;
@@ -153,9 +149,7 @@ body {
     color: white;
 }
 
-/* =====================================
-   SECTION TITLES
-===================================== */
+/* section tiles */
 
 .product-section h3 {
     font-size: 22px;
@@ -170,9 +164,7 @@ body {
     margin: 0 0 25px 0;
 }
 
-/* =====================================
-   TRANSACTION LIST
-===================================== */
+/* transaksi */
 
 .transaction-list {
     display: flex;
@@ -296,9 +288,7 @@ body {
     color: #dc2626;
 }
 
-/* =====================================
-   EMPTY STATE
-===================================== */
+/* kosong kek hatimu wkwk */
 
 .empty {
     background: white;
@@ -313,9 +303,7 @@ body {
     font-size: 15px;
 }
 
-/* =====================================
-   PRODUCT GRID (if needed)
-===================================== */
+/* prodct grid */
 
 .product-grid {
     display: grid;
@@ -402,5 +390,120 @@ body {
     
     .transaction-status {
         margin-top: 10px;
+    }
+}
+
+/* NEW edit profile style */
+
+.edit-container {
+    max-width: 900px;
+    margin: 40px auto;
+    background: white;
+    padding: 30px;
+    border-radius: 16px;
+    box-shadow: 0 8px 25px rgba(0,0,0,.05);
+}
+
+.edit-container h2 {
+    margin-bottom: 10px;
+    font-size: 26px;
+}
+
+.edit-wrapper {
+    display: flex;
+    gap: 30px;
+    align-items: flex-start;
+}
+
+.edit-avatar {
+    width: 180px;
+    text-align: center;
+}
+
+.profile-img-edit {
+    width: 140px !important;
+    height: 140px !important;
+    min-width: 140px !important;
+    min-height: 140px !important;
+    max-width: 140px !important;
+    max-height: 140px !;
+    object-fit: cover;
+    border-radius: 50%;
+    display: block;
+}
+
+
+.edit-avatar input {
+    width: 100%;
+    font-size: 13px;
+}
+
+.edit-form {
+    flex: 1;
+}
+
+.input-group {
+    margin-bottom: 16px;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 14px;
+    color: #444;
+    font-weight: 600;
+}
+
+.input-group input,
+.input-group textarea {
+    width: 100%;
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    font-size: 14px;
+    outline: none;
+    transition: all 0.2s;
+}
+
+.input-group input:focus,
+.input-group textarea:focus {
+    border-color: #10b981;
+    box-shadow: 0 0 0 2px rgba(16,185,129,0.08);
+}
+
+textarea {
+    min-height: 80px;
+    resize: vertical;
+}
+
+.btn-primary {
+    background: #10b981;
+    color: white;
+    border: none;
+    padding: 12px 22px;
+    font-size: 14px;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn-primary:hover {
+    background: #059669;
+    transform: translateY(-1px);
+}
+
+/* RESPONSIVE FIX */
+@media (max-width: 768px) {
+    .profile-img-edit {
+        margin: 0 auto;
+    }
+    .edit-wrapper {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .edit-form {
+        width: 100%;
     }
 }

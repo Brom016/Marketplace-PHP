@@ -147,3 +147,46 @@
     opacity: 0.5;
     cursor: not-allowed;
 }
+
+
+/* 
+   ADMIN HEADER EXTENSION
+*/
+.admin-header {
+    background: #fff;
+    border-bottom: 1px solid #eee;
+}
+
+.admin-container {
+    justify-content: space-between;
+}
+
+.admin-nav {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+}
+
+.admin-nav a {
+    text-decoration: none;
+    color: #333;
+    font-weight: 600;
+    font-size: 15px;
+    padding: 8px 4px;
+    transition: .2s;
+}
+
+.admin-nav a:hover {
+    color: #1e8449;
+}
+
+.admin-logout {
+    color: #e63946;
+    font-weight: 700;
+    text-decoration: none;
+    padding: 8px 4px;
+}
+
+.admin-logout:hover {
+    opacity: .7;
+}

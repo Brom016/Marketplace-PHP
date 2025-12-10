@@ -14,7 +14,7 @@ if (isset($_SESSION['user_id'])) {
 // Default profile picture
 $profile_pic = "assets/img/default-profile.png";
 if ($user && !empty($user['profile_picture'])) {
-    $profile_pic = "../uploads/profile/" . $user['profile_picture'];
+    $profile_pic = "../../uploads/profile/" . $user['profile_picture'];
 }
 ?>
 <!doctype html>

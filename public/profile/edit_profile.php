@@ -12,7 +12,9 @@ $stmt = $pdo->prepare("SELECT id, username, name, email, phone, city, address, p
 $stmt->execute([$user_id]);
 $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-if (!$user) { die("User tidak ditemukan."); }
+if (!$user) {
+    die("User tidak ditemukan.");
+}
 
 $profile_pic = !empty($user['profile_picture']) ? "/uploads/profile/" . $user['profile_picture'] : "/uploads/profile/default-profile.png";
 $errors = [];
@@ -26,12 +28,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $description = trim($_POST['description'] ?? '');
 
     // validate minimal
-    if ($name === '') { $errors[] = "Nama tidak boleh kosong."; }
+    if ($name === '') {
+        $errors[] = "Nama tidak boleh kosong.";
+    }
 
     // handle file upload
     $photo_filename = $user['profile_picture'];
     if (!empty($_FILES['profile_picture']['name'])) {
-        $allowed = ['jpg','jpeg','png'];
+        $allowed = ['jpg', 'jpeg', 'png'];
         $file = $_FILES['profile_picture'];
         $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
         if (!in_array($ext, $allowed)) {
@@ -44,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (!move_uploaded_file($file['tmp_name'], $dest)) {
                 $errors[] = "Gagal mengunggah gambar.";
             } else {
-                // remove old file if exists & not default
+                //upload gambar
                 if (!empty($photo_filename) && file_exists(__DIR__ . "/../../uploads/profile/" . $photo_filename)) {
                     @unlink(__DIR__ . "/../../uploads/profile/" . $photo_filename);
                 }
@@ -63,65 +67,71 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 ?>
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="utf-8">
     <title>Edit Profil</title>
     <link rel="stylesheet" href="../../assets/css/main.css">
     <link rel="stylesheet" href="../../assets/css/profile.css">
 </head>
+
 <body>
-<?php
-if (file_exists(__DIR__ . "/../components/header.php")) {
-    include __DIR__ . "/../components/header.php";
-}
-?>
+    <?php
+    if (file_exists(__DIR__ . "/../components/header.php")) {
+        include __DIR__ . "/../components/header.php";
+    }
+    ?>
 
-<div class="edit-container">
+    <div class="edit-container">
 
-    <h2>Edit Profil</h2>
-    <hr style="margin:12px 0 20px 0;">
+        <h2>Edit Profil</h2>
+        <p style="color:#888;margin-bottom:20px;">Perbarui informasi akun kamu di sini</p>
 
-    <?php if (!empty($errors)): ?>
-        <div class="alert alert-danger" style="background:#ffd6d6;padding:10px;border-radius:6px;margin-bottom:15px;color:#aa0000;">
-            <?php foreach ($errors as $e) echo "<div>" . htmlspecialchars($e) . "</div>"; ?>
-        </div>
-    <?php endif; ?>
+        <?php if (!empty($errors)): ?>
+            <div class="alert alert-danger" style="background:#ffd6d6;padding:12px;border-radius:8px;margin-bottom:20px;color:#aa0000;">
+                <?php foreach ($errors as $e) echo "<div>" . htmlspecialchars($e) . "</div>"; ?>
+            </div>
+        <?php endif; ?>
 
-    <form method="post" enctype="multipart/form-data">
-        <div style="display:flex; gap:20px; align-items:flex-start;">
-            <div style="width:140px;">
-                <img src="<?= htmlspecialchars($profile_pic) ?>" class="profile-img-edit" alt="Foto profil">
-                <div style="margin-top:8px;">
+        <form method="post" enctype="multipart/form-data">
+            <div class="edit-wrapper">
+
+                <div class="edit-avatar">
+                    <img src="<?= htmlspecialchars($profile_pic) ?>" class="profile-img-edit" alt="Foto profil">
                     <input type="file" name="profile_picture" accept="image/*">
                 </div>
+
+                <div class="edit-form">
+
+                    <div class="input-group">
+                        <label>Nama Lengkap</label>
+                        <input type="text" name="name" value="<?= htmlspecialchars($user['name']) ?>">
+                    </div>
+
+                    <div class="input-group">
+                        <label>Kota</label>
+                        <input type="text" name="city" value="<?= htmlspecialchars($user['city']) ?>">
+                    </div>
+
+                    <div class="input-group">
+                        <label>Alamat Lengkap</label>
+                        <textarea name="address"><?= htmlspecialchars($user['address']) ?></textarea>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Deskripsi</label>
+                        <textarea name="description"><?= htmlspecialchars($user['description']) ?></textarea>
+                    </div>
+
+                    <button class="btn-primary" type="submit">Simpan Perubahan</button>
+
+                </div>
             </div>
+        </form>
 
-            <div style="flex:1;">
-                <div class="input-group">
-                    <label>Nama Lengkap</label>
-                    <input type="text" name="name" value="<?= htmlspecialchars($user['name']) ?>">
-                </div>
+    </div>
 
-                <div class="input-group">
-                    <label>Kota</label>
-                    <input type="text" name="city" value="<?= htmlspecialchars($user['city']) ?>">
-                </div>
-
-                <div class="input-group">
-                    <label>Alamat Lengkap</label>
-                    <textarea name="address"><?= htmlspecialchars($user['address']) ?></textarea>
-                </div>
-
-                <div class="input-group">
-                    <label>Deskripsi</label>
-                    <textarea name="description"><?= htmlspecialchars($user['description']) ?></textarea>
-                </div>
-
-                <button class="btn-primary" type="submit">Simpan Perubahan</button>
-            </div>
-        </div>
-    </form>
-</div>
 
 </body>
+
 </html>

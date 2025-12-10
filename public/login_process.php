@@ -31,7 +31,7 @@ $_SESSION['user_role'] = $user['role'];
 
 // redirect based on role
 if ($user['role'] === 'admin') {
-    header('Location: ../admin/dashboard.php');
+    header('Location: ../admin/index.php');
     exit;
 } elseif ($user['role'] === 'seller') {
     header('Location: seller/dashboard.php');
