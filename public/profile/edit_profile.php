@@ -8,7 +8,12 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 $user_id = $_SESSION['user_id'];
-$stmt = $pdo->prepare("SELECT id, username, name, email, phone, city, address, profile_picture, description FROM accounts WHERE id = ?");
+
+$stmt = $pdo->prepare("
+    SELECT id, username, name, email, phone, city, address, profile_picture, description
+    FROM accounts
+    WHERE id = ?
+");
 $stmt->execute([$user_id]);
 $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -16,41 +21,58 @@ if (!$user) {
     die("User tidak ditemukan.");
 }
 
-$profile_pic = !empty($user['profile_picture']) ? "/uploads/profile/" . $user['profile_picture'] : "/uploads/profile/default-profile.png";
+/* ======================
+   PATH GAMBAR (FIX)
+====================== */
+$profile_pic = !empty($user['profile_picture'])
+    ? "../../uploads/profile/" . $user['profile_picture']
+    : "../../uploads/profile/default-profile.png";
 $errors = [];
 
-// Handle update
+/* ======================
+   UPDATE PROFILE
+====================== */
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    $name = trim($_POST['name'] ?? '');
-    $city = trim($_POST['city'] ?? '');
-    $address = trim($_POST['address'] ?? '');
+    $name        = trim($_POST['name'] ?? '');
+    $city        = trim($_POST['city'] ?? '');
+    $address     = trim($_POST['address'] ?? '');
     $description = trim($_POST['description'] ?? '');
 
-    // validate minimal
     if ($name === '') {
         $errors[] = "Nama tidak boleh kosong.";
     }
 
-    // handle file upload
+    /* ======================
+       UPLOAD FOTO
+    ====================== */
     $photo_filename = $user['profile_picture'];
+
     if (!empty($_FILES['profile_picture']['name'])) {
+
+        $file    = $_FILES['profile_picture'];
         $allowed = ['jpg', 'jpeg', 'png'];
-        $file = $_FILES['profile_picture'];
-        $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+        $ext     = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+
         if (!in_array($ext, $allowed)) {
-            $errors[] = "Format gambar harus JPG/PNG.";
+            $errors[] = "Format gambar harus JPG / PNG.";
         } elseif ($file['size'] > 2 * 1024 * 1024) {
-            $errors[] = "Maksimum ukuran gambar 2MB.";
+            $errors[] = "Ukuran maksimum 2MB.";
         } else {
+
             $newname = time() . "_" . bin2hex(random_bytes(6)) . "." . $ext;
-            $dest = __DIR__ . "/../../uploads/profile/" . $newname;
+            $uploadDir = __DIR__ . "/../../uploads/profile/";
+            $dest = $uploadDir . $newname;
+
             if (!move_uploaded_file($file['tmp_name'], $dest)) {
                 $errors[] = "Gagal mengunggah gambar.";
             } else {
-                //upload gambar
-                if (!empty($photo_filename) && file_exists(__DIR__ . "/../../uploads/profile/" . $photo_filename)) {
-                    @unlink(__DIR__ . "/../../uploads/profile/" . $photo_filename);
+                // hapus foto lama
+                if (!empty($photo_filename)) {
+                    $old = $uploadDir . $photo_filename;
+                    if (file_exists($old)) {
+                        @unlink($old);
+                    }
                 }
                 $photo_filename = $newname;
             }
@@ -58,8 +80,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if (empty($errors)) {
-        $update = $pdo->prepare("UPDATE accounts SET name = ?, city = ?, address = ?, description = ?, profile_picture = ? WHERE id = ?");
-        $update->execute([$name, $city, $address, $description, $photo_filename, $user_id]);
+        $update = $pdo->prepare("
+            UPDATE accounts
+            SET name = ?, city = ?, address = ?, description = ?, profile_picture = ?
+            WHERE id = ?
+        ");
+        $update->execute([
+            $name,
+            $city,
+            $address,
+            $description,
+            $photo_filename,
+            $user_id
+        ]);
+
         header("Location: profile.php?updated=1");
         exit;
     }
@@ -73,23 +107,135 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title>Edit Profil</title>
     <link rel="stylesheet" href="../../assets/css/main.css">
     <link rel="stylesheet" href="../../assets/css/profile.css">
+    <link rel="stylesheet" href="../../assets/css/header.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 
 <body>
+
+    <!-- HEADER JANGAN DIUBAH -->
     <?php
-    if (file_exists(__DIR__ . "/../components/header.php")) {
-        include __DIR__ . "/../components/header.php";
+
+    $user_id = $user['id'] ?? null;
+
+    // HITUNG WISHLIST
+    $cart_total = 0;
+    if ($user_id) {
+        $stmt = $pdo->prepare("SELECT COUNT(*) FROM wishes WHERE user_id = ?");
+        $stmt->execute([$user_id]);
+        $cart_total = (int)$stmt->fetchColumn();
     }
+
+    // HITUNG NOTIFIKASI
+    $notif_total = 0;
+    if ($user_id) {
+        $stmt = $pdo->prepare("SELECT COUNT(*) FROM notifications WHERE user_id = ? AND is_read = 0");
+        $stmt->execute([$user_id]);
+        $notif_total = (int)$stmt->fetchColumn();
+    }
+
+    // HITUNG CHAT BELUM DIBACA
+    $chat_total = 0;
+    if ($user_id) {
+        $stmt = $pdo->prepare("
+        SELECT COUNT(*) 
+        FROM chat_messages 
+        WHERE receiver_id = ? 
+        AND is_read = 0
+    ");
+        $stmt->execute([$user_id]);
+        $chat_total = (int)$stmt->fetchColumn();
+    }
+
+    // SELECT PROFIL PIC fallback
+    $iconA = "../assets/images/icontrs.png";
+    $iconB = "../../assets/images/icontrs.png";
+    $logo  = file_exists($iconA) ? $iconA : $iconB;
     ?>
+
+    <!-- HEADER -->
+    <div class="cm-header">
+        <div class="cm-container">
+
+            <!-- LOGO -->
+            <a href="../index.php" class="cm-logo">
+                <img src="<?= $logo ?>" alt="Logo">
+                <span>CampusMarket</span>
+            </a>
+
+            <!-- SEARCH -->
+            <div class="cm-search">
+                <form>
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Cari produk mahasiswa...">
+                </form>
+            </div>
+
+            <!-- RIGHT MENU -->
+            <div class="cm-menu-right">
+
+                <!-- CART (WISHLIST) -->
+                <a href="../cart/cart.php" class="cm-icon-btn">
+                    <i class="fas fa-shopping-cart"></i>
+                    <?php if ($cart_total > 0): ?>
+                        <span class="cm-badge green"><?= $cart_total ?></span>
+                    <?php endif; ?>
+                </a>
+
+                <!-- CHAT -->
+                <a href="../chat/chat.php" class="cm-icon-btn">
+                    <i class="fa-solid fa-message"></i>
+                    <?php if ($chat_total > 0): ?>
+                        <span class="cm-badge"><?= $chat_total ?></span>
+                    <?php endif; ?>
+                </a>
+
+                <!-- NOTIFICATIONS -->
+                <a href="../notifications/" class="cm-icon-btn">
+                    <i class=""></i>
+                    <?php if ($notif_total > 0): ?>
+                        <span class=""><?= $notif_total ?></span>
+                    <?php endif; ?>
+                </a>
+
+                <?php
+                $current_page     = basename($_SERVER['PHP_SELF']);
+                $is_profile_page  = ($current_page === 'profile.php');
+                ?>
+
+                <?php if (!$user): ?>
+                    <div class="cm-auth">
+                        <a href="login.php">Sign In</a> |
+                        <a href="register.php">Sign Up</a>
+                    </div>
+
+                <?php else: ?>
+                    <div
+                        class="cm-profile"
+                        <?php if (!$is_profile_page): ?> onclick="window.location='profile.php'" <?php endif; ?>>
+                        <img src="<?= htmlspecialchars($profile_pic) ?>" class="cm-profile-img">
+                        <div class="cm-user-info">
+                            <span><?= htmlspecialchars($user['name']) ?></span>
+                            <small>Mahasiswa</small>
+                        </div>
+                    </div>
+                <?php endif; ?>
+
+            </div>
+        </div>
+    </div>
+    <!-- HEADER END -->
 
     <div class="edit-container">
 
         <h2>Edit Profil</h2>
-        <p style="color:#888;margin-bottom:20px;">Perbarui informasi akun kamu di sini</p>
+        <p style="color:#888;margin-bottom:20px;">Perbarui informasi akun kamu</p>
 
-        <?php if (!empty($errors)): ?>
-            <div class="alert alert-danger" style="background:#ffd6d6;padding:12px;border-radius:8px;margin-bottom:20px;color:#aa0000;">
-                <?php foreach ($errors as $e) echo "<div>" . htmlspecialchars($e) . "</div>"; ?>
+        <?php if ($errors): ?>
+            <div style="background:#ffd6d6;padding:12px;border-radius:8px;color:#900;margin-bottom:20px">
+                <?php foreach ($errors as $e): ?>
+                    <div><?= htmlspecialchars($e) ?></div>
+                <?php endforeach; ?>
             </div>
         <?php endif; ?>
 
@@ -97,8 +243,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="edit-wrapper">
 
                 <div class="edit-avatar">
-                    <img src="<?= htmlspecialchars($profile_pic) ?>" class="profile-img-edit" alt="Foto profil">
-                    <input type="file" name="profile_picture" accept="image/*">
+                    <img
+                        src="<?= htmlspecialchars($profile_pic) ?>"
+                        id="avatarPreview"
+                        class="profile-img-edit"
+                        alt="Foto Profil">
+
+                    <!-- INPUT ASLI (DISIMPAN) -->
+                    <input
+                        type="file"
+                        id="profileUpload"
+                        name="profile_picture"
+                        accept="image/*"
+                        hidden>
+
+                    <!-- TOMBOL -->
+                    <button type="button" class="btn-upload" onclick="triggerUpload()">
+                        📷 Ganti Foto
+                    </button>
                 </div>
 
                 <div class="edit-form">
@@ -114,7 +276,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
 
                     <div class="input-group">
-                        <label>Alamat Lengkap</label>
+                        <label>Alamat</label>
                         <textarea name="address"><?= htmlspecialchars($user['address']) ?></textarea>
                     </div>
 
@@ -123,7 +285,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <textarea name="description"><?= htmlspecialchars($user['description']) ?></textarea>
                     </div>
 
-                    <button class="btn-primary" type="submit">Simpan Perubahan</button>
+                    <button class="btn-primary" type="submit">
+                        Simpan Perubahan
+                    </button>
 
                 </div>
             </div>
@@ -131,7 +295,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     </div>
 
-
+<script src="../../assets/js/upload.js"></script>
 </body>
-
+<?php include __DIR__ . '/../components/footer.php'; ?>
 </html>

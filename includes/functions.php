@@ -38,3 +38,71 @@ function clear_otp_for_user($user_id) {
     $stmt = $pdo->prepare("UPDATE accounts SET otp_code = NULL, otp_expired = NULL WHERE id = :id");
     return $stmt->execute(['id' => $user_id]);
 }
+
+
+//sistem msg
+/* =========================
+   AUTH
+========================= */
+function requireLogin() {
+    if (!isset($_SESSION['user_id'])) {
+        header("Location: /marketmm/public/login.php");
+        exit;
+    }
+}
+
+function isBuyer() {
+    return isset($_SESSION['role']) && $_SESSION['role'] === 'buyer';
+}
+
+function isSeller() {
+    return isset($_SESSION['role']) && $_SESSION['role'] === 'seller';
+}
+
+/* =========================
+   SYSTEM MESSAGE
+========================= */
+function systemMessage(PDO $pdo, int $chat_room_id, string $message) {
+    $stmt = $pdo->prepare("
+        INSERT INTO chat_messages (chat_room_id, sender_id, receiver_id, message, created_at)
+        VALUES (?, NULL, NULL, ?, NOW())
+    ");
+    $stmt->execute([$chat_room_id, '[SYSTEM] ' . $message]);
+}
+
+/* =========================
+   GET ACTIVE COD 
+========================= */
+function getActiveCOD(PDO $pdo, int $room_id) {
+    // ambil relasi dari chat room
+    $stmt = $pdo->prepare("
+        SELECT buyer_id, seller_id, product_id
+        FROM chat_rooms
+        WHERE id = ?
+        LIMIT 1
+    ");
+    $stmt->execute([$room_id]);
+    $room = $stmt->fetch();
+
+    if (!$room) {
+        return null;
+    }
+
+    // cari COD aktif berdasarkan relasi logis
+    $stmt = $pdo->prepare("
+        SELECT *
+        FROM cod_transactions
+        WHERE buyer_id = ?
+          AND seller_id = ?
+          AND product_id = ?
+          AND status NOT IN ('cancelled','rejected','completed')
+        LIMIT 1
+    ");
+    $stmt->execute([
+        $room['buyer_id'],
+        $room['seller_id'],
+        $room['product_id']
+    ]);
+
+    return $stmt->fetch();
+}

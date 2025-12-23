@@ -1,12 +1,117 @@
-.btn-cod {
-    background: #f59e0b;
-    color: white;
-    padding: 12px 24px;
-    border-radius: 8px;
-    text-decoration: none;
-    font-weight: bold;
+body {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+    margin: 0;
+    padding: 0;
 }
 
-.btn-cod:hover {
-    background: #d97706;
+.cod-container {
+    max-width: 900px;
+    margin: 30px auto;
+    padding: 15px;
+}
+
+.page-header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.subtitle {
+    color: #6b7280;
+    font-size: 14px;
+}
+
+.filter-tabs {
+    display: flex;
+    gap: 10px;
+    margin: 20px 0;
+    overflow-x: auto;
+}
+
+.tab-item {
+    padding: 8px 16px;
+    border-radius: 20px;
+    background: #e5e7eb;
+    color: #374151;
+    text-decoration: none;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.tab-item.active {
+    background: #2563eb;
+    color: white;
+}
+
+.transaction-card {
+    display: flex;
+    gap: 15px;
+    background: white;
+    padding: 15px;
+    border-radius: 12px;
+    margin-bottom: 15px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.07);
+}
+
+.transaction-image img {
+    width: 110px;
+    height: 110px;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+.transaction-info {
+    flex: 1;
+}
+
+.transaction-header h3 {
+    font-size: 18px;
+    margin: 0;
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    margin: 4px 0;
+}
+
+.price-total {
+    color: #ef4444;
+    font-weight: 700;
+}
+
+.meeting-details {
+    background: #f9fafb;
+    padding: 10px;
+    border-radius: 10px;
+    margin-top: 10px;
+}
+
+.transaction-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.transaction-actions .btn {
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-approve { background: #10b981; color: white; }
+.btn-reject { background: #ef4444; color: white; }
+.btn-complete { background: #3b82f6; color: white; }
+.btn-detail { background: #e5e7eb; color: #374151; }
+
+@media (max-width: 700px) {
+    .transaction-card {
+        flex-direction: column;
+    }
 }

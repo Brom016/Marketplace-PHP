@@ -7,10 +7,9 @@
 
         <!-- LOGO -->
         <?php
-        $iconA = "../assets/images/icontrs.png";
-        $iconB = "../../assets/images/icontrs.png";
-
-        $logo = file_exists($iconA) ? $iconA : $iconB;
+            $iconA = "../assets/images/icontrs.png";
+            $iconB = "../../assets/images/icontrs.png";
+            $logo  = file_exists($iconA) ? $iconA : $iconB;
         ?>
         <a href="../index.php" class="cm-logo">
             <img src="<?= $logo ?>" alt="Logo">
@@ -39,8 +38,8 @@
             </a>
 
             <?php
-            $current_page = basename($_SERVER['PHP_SELF']);
-            $is_profile_page =  ($current_page === 'profile.php');
+                $current_page     = basename($_SERVER['PHP_SELF']);
+                $is_profile_page  = ($current_page === 'profile.php');
             ?>
 
             <?php if (!$user): ?>
@@ -53,9 +52,10 @@
                 <div
                     class="cm-profile"
                     <?php if (!$is_profile_page): ?>
-                    onclick="window.location='profile/profile.php'"
-                    style="cursor:pointer;"
-                    <?php endif; ?>>
+                        onclick="window.location='profile/profile.php'"
+                        style="cursor:pointer;"
+                    <?php endif; ?>
+                >
                     <img src="<?= htmlspecialchars($profile_pic) ?>" class="cm-profile-img">
                     <div class="cm-user-info">
                         <span><?= htmlspecialchars($user['name']) ?></span>

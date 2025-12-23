@@ -61,10 +61,128 @@ $join_date = date("F Y", strtotime($user['created_at']));
     <title>Profil — CampusMarket</title>
     <link rel="stylesheet" href="../../assets/css/main.css">
     <link rel="stylesheet" href="../../assets/css/profile.css">
+    <link rel="stylesheet" href="../../assets/css/header.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+
+
 </head>
 
 <body>
-    <?php include __DIR__ . '/../components/header.php'; ?>
+    <!-- HEADER JANGAN DIUBAH -->
+    <?php
+
+    $user_id = $user['id'] ?? null;
+
+    // HITUNG WISHLIST
+    $cart_total = 0;
+    if ($user_id) {
+        $stmt = $pdo->prepare("SELECT COUNT(*) FROM wishes WHERE user_id = ?");
+        $stmt->execute([$user_id]);
+        $cart_total = (int)$stmt->fetchColumn();
+    }
+
+    // HITUNG NOTIFIKASI
+    $notif_total = 0;
+    if ($user_id) {
+        $stmt = $pdo->prepare("SELECT COUNT(*) FROM notifications WHERE user_id = ? AND is_read = 0");
+        $stmt->execute([$user_id]);
+        $notif_total = (int)$stmt->fetchColumn();
+    }
+
+    // HITUNG CHAT BELUM DIBACA
+    $chat_total = 0;
+    if ($user_id) {
+        $stmt = $pdo->prepare("
+        SELECT COUNT(*) 
+        FROM chat_messages 
+        WHERE receiver_id = ? 
+        AND is_read = 0
+    ");
+        $stmt->execute([$user_id]);
+        $chat_total = (int)$stmt->fetchColumn();
+    }
+
+    // SELECT PROFIL PIC fallback
+    $iconA = "../assets/images/icontrs.png";
+    $iconB = "../../assets/images/icontrs.png";
+    $logo  = file_exists($iconA) ? $iconA : $iconB;
+    ?>
+
+    <!-- HEADER -->
+    <div class="cm-header">
+        <div class="cm-container">
+
+            <!-- LOGO -->
+            <a href="../index.php" class="cm-logo">
+                <img src="<?= $logo ?>" alt="Logo">
+                <span>CampusMarket</span>
+            </a>
+
+            <!-- SEARCH -->
+            <div class="cm-search">
+                <form>
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Cari produk mahasiswa...">
+                </form>
+            </div>
+
+            <!-- RIGHT MENU -->
+            <div class="cm-menu-right">
+
+                <!-- CART (WISHLIST) -->
+                <a href="../cart/cart.php" class="cm-icon-btn">
+                    <i class="fas fa-shopping-cart"></i>
+                    <?php if ($cart_total > 0): ?>
+                        <span class="cm-badge green"><?= $cart_total ?></span>
+                    <?php endif; ?>
+                </a>
+
+                <!-- CHAT -->
+                <a href="../chat/index.php" class="cm-icon-btn">
+                    <i class="fa-solid fa-message"></i>
+                    <?php if ($chat_total > 0): ?>
+                        <span class="cm-badge"><?= $chat_total ?></span>
+                    <?php endif; ?>
+                </a>
+
+                <!-- NOTIFICATIONS -->
+                <a href="../notifications/" class="cm-icon-btn">
+                    <i class=""></i>
+                    <?php if ($notif_total > 0): ?>
+                        <span class=""><?= $notif_total ?></span>
+                    <?php endif; ?>
+                </a>
+
+                <?php
+                $current_page     = basename($_SERVER['PHP_SELF']);
+                $is_profile_page  = ($current_page === 'profile.php');
+                ?>
+
+                <?php if (!$user): ?>
+                    <div class="cm-auth">
+                        <a href="login.php">Sign In</a> |
+                        <a href="register.php">Sign Up</a>
+                    </div>
+
+                <?php else: ?>
+                    <div
+                        class="cm-profile"
+                        <?php if (!$is_profile_page): ?> onclick="window.location='profile.php'" <?php endif; ?>>
+                        <img src="<?= htmlspecialchars($profile_pic) ?>" class="cm-profile-img">
+                        <div class="cm-user-info">
+                            <span><?= htmlspecialchars($user['name']) ?></span>
+                            <small>Mahasiswa</small>
+                        </div>
+                    </div>
+                <?php endif; ?>
+
+            </div>
+        </div>
+    </div>
+    <!-- HEADER END -->
+
+
 
     <!-- PROFILE HEADER SECTION -->
     <div class="seller-profile">
@@ -95,18 +213,29 @@ $join_date = date("F Y", strtotime($user['created_at']));
             </div>
 
             <div class="profile-btn">
-                <a href="../chat/chat.php" class="btn-contact">Contact</a>
-                <a href="edit_profile.php" class="btn-contact">Edit Profile</a>
-                <br>
-                <?php if (isset($user['role']) && $user['role'] === 'seller'): ?>
-                    <a href="../seller/dashboard.php" class="back-dashboard-btn">Back to Dashboard</a>
-                <?php else: ?>
-                    <a href="../seller/register_seller.php" class="back-dashboard-btn">
-                        Daftar sebagai Seller
-                    </a>
 
-                <?php endif; ?>
+                <div class="btn-row">
+                    <a href="../chat/index.php" class="btn btn-primary">Contact</a>
+                    <a href="edit_profile.php" class="btn btn-primary">Edit Profile</a>
+                </div>
+
+                <div class="btn-column">
+                    <?php if (isset($user['role']) && $user['role'] === 'seller'): ?>
+                        <a href="../seller/dashboard.php" class="btn btn-secondary">
+                            Back to Dashboard
+                        </a>
+                    <?php else: ?>
+                        <a href="../seller/register_seller.php" class="btn btn-secondary">
+                            Daftar sebagai Seller
+                        </a>
+                    <?php endif; ?>
+
+                    <a href="../logout.php" class="btn btn-danger">Logout</a>
+                </div>
+
             </div>
+
+
         </div>
     </div>
 
@@ -115,7 +244,7 @@ $join_date = date("F Y", strtotime($user['created_at']));
         <div class="menu-tabs">
             <a href="#" class="tab-item active">📦 My Products <?= $product_count ?></a>
             <a href="../cod_transaction/index.php" class="tab-item">🤝 COD Transaction <?= $cod_count ?></a>
-            <a href="../chat/chat.php" class="tab-item">💬 New Message <?= $message_count ?></a>
+            <a href="../chat/index.php" class="tab-item">💬 New Message <?= $message_count ?></a>
         </div>
     </div>
 
@@ -127,21 +256,31 @@ $join_date = date("F Y", strtotime($user['created_at']));
         <?php
         // Get COD transactions
         $stmt = $pdo->prepare("
-        SELECT 
-            ct.*,
-            p.name as product_name,
-            a.name as buyer_name,
-            pi.url as product_image
-        FROM cod_transactions ct
-        INNER JOIN products p ON ct.product_id = p.id
-        INNER JOIN accounts a ON ct.buyer_id = a.id
-        LEFT JOIN product_images pi ON p.id = pi.product_id AND pi.is_primary = 1
-        WHERE ct.seller_id = ?
-        ORDER BY ct.created_at DESC
-        LIMIT 5
-    ");
-        $stmt->execute([$user_id]);
+    SELECT 
+        ct.*,
+        p.name AS product_name,
+        a.name AS buyer_name,
+        pi.url AS product_image
+    FROM cod_transactions ct
+    JOIN products p ON ct.product_id = p.id
+    JOIN accounts a ON ct.buyer_id = a.id
+    LEFT JOIN product_images pi 
+        ON p.id = pi.product_id AND pi.is_primary = 1
+    WHERE 
+        (? = 'seller' AND ct.seller_id = ?)
+        OR
+        (? = 'buyer' AND ct.buyer_id = ?)
+    ORDER BY ct.created_at DESC
+    LIMIT 5
+");
+        $stmt->execute([
+            $user['role'],
+            $user_id,
+            $user['role'],
+            $user_id
+        ]);
         $transactions = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
         ?>
 
         <?php if (count($transactions) > 0): ?>
@@ -182,21 +321,25 @@ $join_date = date("F Y", strtotime($user['created_at']));
                             switch ($trans['status']) {
                                 case 'pending':
                                     $status_class = 'status-pending';
-                                    $status_text = 'Menunggu';
+                                    $status_text  = 'Menunggu';
                                     break;
+
                                 case 'approved':
                                     $status_class = 'status-approved';
-                                    $status_text = 'Selesai';
+                                    $status_text  = 'Disetujui';
                                     break;
+
                                 case 'completed':
                                     $status_class = 'status-completed';
-                                    $status_text = 'Selesai';
+                                    $status_text  = 'Selesai';
                                     break;
+
                                 case 'cancelled':
                                     $status_class = 'status-cancelled';
-                                    $status_text = 'Dibatalkan';
+                                    $status_text  = 'Dibatalkan';
                                     break;
                             }
+
                             ?>
                             <span class="status-badge <?= $status_class ?>"><?= $status_text ?></span>
                         </div>
@@ -213,8 +356,9 @@ $join_date = date("F Y", strtotime($user['created_at']));
 
     <br>
 
-    <a href="../logout.php" class="logout-btn">Logout</a>
-    
+
+    <br>
+    <br>
 </body>
 <?php include __DIR__ . '/../components/footer.php'; ?>
 
