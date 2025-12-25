@@ -3,6 +3,7 @@
 require_once "../../includes/config.php";
 require_once "../../includes/functions.php";
 
+// Cek Login
 if (!isset($_SESSION['user_id'])) {
     header("Location: ../login.php");
     exit;
@@ -10,51 +11,78 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id'];
 
-// Get user data
+// 1. AMBIL DATA USER
 $stmt = $pdo->prepare("SELECT * FROM accounts WHERE id = ?");
 $stmt->execute([$user_id]);
 $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-// Get products count
-$stmt = $pdo->prepare("SELECT COUNT(*) as total FROM products WHERE seller_id = ?");
-$stmt->execute([$user_id]);
-$product_count = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
+if (!$user) {
+    die("User tidak ditemukan.");
+}
 
-// Get COD transactions count
-$stmt = $pdo->prepare("SELECT COUNT(*) as total FROM cod_transactions WHERE seller_id = ?");
-$stmt->execute([$user_id]);
-$cod_count = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
+// 2. HITUNG PRODUK (Hanya jika user adalah seller)
+$product_count = 0;
+if ($user['role'] == 'seller') {
+    $stmt = $pdo->prepare("SELECT COUNT(*) FROM products WHERE seller_id = ? AND status = 'active'");
+    $stmt->execute([$user_id]);
+    $product_count = $stmt->fetchColumn();
+}
 
-// Get reviews count and average rating
+// 3. HITUNG TRANSAKSI COD BERJALAN (Untuk Badge Tab)
+// Kita hitung yang statusnya Pending, Waiting, atau Approved (Butuh perhatian)
 $stmt = $pdo->prepare("
-    SELECT COUNT(*) as review_count, COALESCE(AVG(rating), 0) as avg_rating
-    FROM product_reviews pr
-    INNER JOIN products p ON pr.product_id = p.id
-    WHERE p.seller_id = ?
+    SELECT COUNT(*) 
+    FROM cod_transactions 
+    WHERE (buyer_id = ? OR seller_id = ?) 
+    AND status IN ('pending', 'waiting_buyer', 'approved')
+");
+$stmt->execute([$user_id, $user_id]);
+$cod_active_count = $stmt->fetchColumn();
+
+// 4. HITUNG RATING & ULASAN
+$review_count = 0;
+$avg_rating = 0;
+if ($user['role'] == 'seller') {
+    $stmt = $pdo->prepare("
+        SELECT COUNT(*) as review_count, COALESCE(AVG(rating), 0) as avg_rating
+        FROM product_reviews pr
+        INNER JOIN products p ON pr.product_id = p.id
+        WHERE p.seller_id = ?
+    ");
+    $stmt->execute([$user_id]);
+    $review_data = $stmt->fetch(PDO::FETCH_ASSOC);
+    $review_count = $review_data['review_count'];
+    $avg_rating = round($review_data['avg_rating'], 1);
+}
+
+// 5. HITUNG PESAN BELUM DIBACA
+$stmt = $pdo->prepare("
+    SELECT COUNT(*) 
+    FROM chat_messages 
+    WHERE receiver_id = ? AND is_read = 0
 ");
 $stmt->execute([$user_id]);
-$review_data = $stmt->fetch(PDO::FETCH_ASSOC);
-$review_count = $review_data['review_count'];
-$avg_rating = round($review_data['avg_rating'], 1);
+$unread_msg_count = $stmt->fetchColumn();
 
-// Get unread messages count
-$stmt = $pdo->prepare("
-    SELECT COUNT(DISTINCT cm.room_id) as unread_count
-    FROM chat_messages cm
-    INNER JOIN chat_rooms cr ON cm.room_id = cr.id
-    WHERE (cr.buyer_id = ? OR cr.seller_id = ?)
-    AND cm.sender_id != ?
-");
-$stmt->execute([$user_id, $user_id, $user_id]);
-$message_count = $stmt->fetch(PDO::FETCH_ASSOC)['unread_count'];
 
+// Setup Tampilan
 $profile_pic = "../../uploads/profile/" . ($user['profile_picture'] ?: "default-profile.png");
+// Fallback jika file tidak ada, pakai default system
+if (!file_exists($profile_pic) && $user['profile_picture']) {
+    $profile_pic = "../../assets/images/default-profile.png"; // Sesuaikan path default
+}
 $join_date = date("F Y", strtotime($user['created_at']));
+
+// Helper Format Tanggal Indo
+function formatTgl($date) {
+    $bulan = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+    $ts = strtotime($date);
+    return date('d', $ts) . ' ' . $bulan[(int)date('n', $ts)-1] . ' ' . date('Y - H:i', $ts);
+}
 ?>
 
 <!DOCTYPE html>
 <html lang="id">
-
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -63,75 +91,107 @@ $join_date = date("F Y", strtotime($user['created_at']));
     <link rel="stylesheet" href="../../assets/css/profile.css">
     <link rel="stylesheet" href="../../assets/css/header.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-
-
-
+    
+    <style>
+        /* CSS Tambahan untuk Badge & Rapih-rapih */
+        .badge-count {
+            background-color: #ff3b30;
+            color: white;
+            font-size: 0.75rem;
+            font-weight: bold;
+            padding: 2px 6px;
+            border-radius: 10px;
+            margin-left: 5px;
+            min-width: 18px;
+            text-align: center;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        
+        .transaction-card {
+            display: flex;
+            background: #fff;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            gap: 15px;
+            align-items: center;
+            transition: transform 0.2s;
+        }
+        .transaction-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+        .transaction-image img {
+            width: 70px;
+            height: 70px;
+            object-fit: cover;
+            border-radius: 6px;
+        }
+        .transaction-info { flex: 1; }
+        .transaction-info h4 { margin: 0 0 5px 0; font-size: 1rem; color: #333; }
+        .transaction-price { font-weight: bold; color: #2196f3; margin-bottom: 5px; }
+        .transaction-meta { font-size: 0.85rem; color: #666; }
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        /* Warna Status */
+        .status-pending { background: #fff3cd; color: #856404; }
+        .status-waiting_buyer { background: #cce5ff; color: #004085; }
+        .status-approved { background: #d1ecf1; color: #0c5460; }
+        .status-completed { background: #d4edda; color: #155724; }
+        .status-cancelled, .status-rejected { background: #f8d7da; color: #721c24; }
+        
+        .empty-state { text-align: center; padding: 30px; background: #f9f9f9; border-radius: 8px; color: #888; }
+    </style>
 </head>
 
 <body>
-    <!-- HEADER JANGAN DIUBAH -->
+    <!-- HEADER SECTION -->
     <?php
-
-    $user_id = $user['id'] ?? null;
-
-    // HITUNG WISHLIST
+    // Logic Header Ringkas
     $cart_total = 0;
-    if ($user_id) {
-        $stmt = $pdo->prepare("SELECT COUNT(*) FROM wishes WHERE user_id = ?");
-        $stmt->execute([$user_id]);
-        $cart_total = (int)$stmt->fetchColumn();
-    }
-
-    // HITUNG NOTIFIKASI
     $notif_total = 0;
-    if ($user_id) {
-        $stmt = $pdo->prepare("SELECT COUNT(*) FROM notifications WHERE user_id = ? AND is_read = 0");
-        $stmt->execute([$user_id]);
-        $notif_total = (int)$stmt->fetchColumn();
-    }
+    
+    // Hitung Wishlist/Cart
+    $stmt = $pdo->prepare("SELECT COUNT(*) FROM wishes WHERE user_id = ?");
+    $stmt->execute([$user_id]);
+    $cart_total = (int)$stmt->fetchColumn();
 
-    // HITUNG CHAT BELUM DIBACA
-    $chat_total = 0;
-    if ($user_id) {
-        $stmt = $pdo->prepare("
-        SELECT COUNT(*) 
-        FROM chat_messages 
-        WHERE receiver_id = ? 
-        AND is_read = 0
-    ");
-        $stmt->execute([$user_id]);
-        $chat_total = (int)$stmt->fetchColumn();
-    }
-
-    // SELECT PROFIL PIC fallback
-    $iconA = "../assets/images/icontrs.png";
-    $iconB = "../../assets/images/icontrs.png";
-    $logo  = file_exists($iconA) ? $iconA : $iconB;
+    // Hitung Notifikasi
+    $stmt = $pdo->prepare("SELECT COUNT(*) FROM notifications WHERE user_id = ? AND is_read = 0");
+    $stmt->execute([$user_id]);
+    $notif_total = (int)$stmt->fetchColumn();
+    
+    // Logo Path
+    $logo = "../../assets/images/icontrs.png"; // Pastikan path ini benar
     ?>
 
-    <!-- HEADER -->
     <div class="cm-header">
         <div class="cm-container">
-
             <!-- LOGO -->
             <a href="../index.php" class="cm-logo">
-                <img src="<?= $logo ?>" alt="Logo">
+                <img src="<?= $logo ?>" alt="Logo" onerror="this.src='../../assets/images/logo-placeholder.png'">
                 <span>CampusMarket</span>
             </a>
 
             <!-- SEARCH -->
             <div class="cm-search">
-                <form>
+                <form action="../search.php" method="GET">
                     <i class="fas fa-search"></i>
-                    <input type="text" placeholder="Cari produk mahasiswa...">
+                    <input type="text" name="q" placeholder="Cari produk mahasiswa...">
                 </form>
             </div>
 
             <!-- RIGHT MENU -->
             <div class="cm-menu-right">
-
-                <!-- CART (WISHLIST) -->
-                <a href="../cart/cart.php" class="cm-icon-btn">
+                <!-- CART -->
+                <a href="../cart/cart.php" class="cm-icon-btn" title="Keranjang">
                     <i class="fas fa-shopping-cart"></i>
                     <?php if ($cart_total > 0): ?>
                         <span class="cm-badge green"><?= $cart_total ?></span>
@@ -139,52 +199,35 @@ $join_date = date("F Y", strtotime($user['created_at']));
                 </a>
 
                 <!-- CHAT -->
-                <a href="../chat/index.php" class="cm-icon-btn">
+                <a href="../chat/index.php" class="cm-icon-btn" title="Chat">
                     <i class="fa-solid fa-message"></i>
-                    <?php if ($chat_total > 0): ?>
-                        <span class="cm-badge"><?= $chat_total ?></span>
+                    <?php if ($unread_msg_count > 0): ?>
+                        <span class="cm-badge"><?= $unread_msg_count ?></span>
                     <?php endif; ?>
                 </a>
 
                 <!-- NOTIFICATIONS -->
-                <a href="../notifications/" class="cm-icon-btn">
+                <a href="../notifications/" class="cm-icon-btn" title="Notifikasi">
                     <i class=""></i>
                     <?php if ($notif_total > 0): ?>
-                        <span class=""><?= $notif_total ?></span>
+                        <span class="cm-badge"><?= $notif_total ?></span>
                     <?php endif; ?>
                 </a>
 
-                <?php
-                $current_page     = basename($_SERVER['PHP_SELF']);
-                $is_profile_page  = ($current_page === 'profile.php');
-                ?>
-
-                <?php if (!$user): ?>
-                    <div class="cm-auth">
-                        <a href="login.php">Sign In</a> |
-                        <a href="register.php">Sign Up</a>
+                <!-- PROFILE -->
+                <div class="cm-profile" onclick="window.location='profile.php'">
+                    <img src="<?= htmlspecialchars($profile_pic) ?>" class="cm-profile-img">
+                    <div class="cm-user-info">
+                        <span><?= htmlspecialchars(substr($user['name'], 0, 15)) ?></span>
+                        <small><?= ucfirst($user['role']) ?></small>
                     </div>
-
-                <?php else: ?>
-                    <div
-                        class="cm-profile"
-                        <?php if (!$is_profile_page): ?> onclick="window.location='profile.php'" <?php endif; ?>>
-                        <img src="<?= htmlspecialchars($profile_pic) ?>" class="cm-profile-img">
-                        <div class="cm-user-info">
-                            <span><?= htmlspecialchars($user['name']) ?></span>
-                            <small>Mahasiswa</small>
-                        </div>
-                    </div>
-                <?php endif; ?>
-
+                </div>
             </div>
         </div>
     </div>
     <!-- HEADER END -->
 
-
-
-    <!-- PROFILE HEADER SECTION -->
+    <!-- PROFILE CONTENT -->
     <div class="seller-profile">
         <div class="profile-card">
             <img src="<?= htmlspecialchars($profile_pic) ?>" alt="Profile Picture" class="profile-avatar">
@@ -192,11 +235,15 @@ $join_date = date("F Y", strtotime($user['created_at']));
             <div class="profile-info">
                 <h2>
                     <?= htmlspecialchars($user['name']) ?>
-                    <span class="verified">✓ Verified</span>
+                    <?php if($user['role'] == 'seller'): ?>
+                        <span class="verified" style="color: #28a745; font-size: 0.6em; vertical-align: middle;">
+                            <i class="fas fa-check-circle"></i> Seller
+                        </span>
+                    <?php endif; ?>
                 </h2>
 
                 <div class="meta">
-                    Bergabung sejak <?= $join_date ?>
+                    <i class="far fa-calendar-alt"></i> Bergabung sejak <?= $join_date ?>
                 </div>
 
                 <div class="stats">
@@ -213,153 +260,161 @@ $join_date = date("F Y", strtotime($user['created_at']));
             </div>
 
             <div class="profile-btn">
-
                 <div class="btn-row">
-                    <a href="../chat/index.php" class="btn btn-primary">Contact</a>
-                    <a href="edit_profile.php" class="btn btn-primary">Edit Profile</a>
+                    <a href="edit_profile.php" class="btn btn-primary"><i class="fas fa-edit"></i> Edit Profile</a>
+                    <a href="../chat/index.php" class="btn btn-outline"><i class="fas fa-envelope"></i> Pesan</a>
                 </div>
 
                 <div class="btn-column">
-                    <?php if (isset($user['role']) && $user['role'] === 'seller'): ?>
+                    <?php if ($user['role'] === 'seller'): ?>
                         <a href="../seller/dashboard.php" class="btn btn-secondary">
-                            Back to Dashboard
+                            <i class="fas fa-tachometer-alt"></i> Dashboard Seller
                         </a>
                     <?php else: ?>
                         <a href="../seller/register_seller.php" class="btn btn-secondary">
-                            Daftar sebagai Seller
+                            <i class="fas fa-store"></i> Daftar jadi Seller
                         </a>
                     <?php endif; ?>
-
-                    <a href="../logout.php" class="btn btn-danger">Logout</a>
+                    <a href="../logout.php" class="btn btn-danger" onclick="return confirm('Yakin ingin logout?')">Logout</a>
                 </div>
-
             </div>
-
-
         </div>
     </div>
 
     <!-- MENU TABS -->
     <div class="product-section">
         <div class="menu-tabs">
-            <a href="#" class="tab-item active">📦 My Products <?= $product_count ?></a>
-            <a href="../cod_transaction/index.php" class="tab-item">🤝 COD Transaction <?= $cod_count ?></a>
-            <a href="../chat/index.php" class="tab-item">💬 New Message <?= $message_count ?></a>
+            <a href="#" class="tab-item active">
+                📦 Produk Saya 
+                <?php if($product_count > 0): ?><span class="badge-count" style="background:#555"><?= $product_count ?></span><?php endif; ?>
+            </a>
+            
+            <a href="../cod_transaction/index.php" class="tab-item">
+                🤝 Transaksi COD 
+                <?php if ($cod_active_count > 0): ?>
+                    <span class="badge-count"><?= $cod_active_count ?></span>
+                <?php endif; ?>
+            </a>
+            
+            <a href="../chat/index.php" class="tab-item">
+                💬 Chat 
+                <?php if ($unread_msg_count > 0): ?>
+                    <span class="badge-count"><?= $unread_msg_count ?></span>
+                <?php endif; ?>
+            </a>
         </div>
     </div>
 
-    <!-- COD TRANSACTIONS SECTION -->
+    <!-- RECENT TRANSACTIONS SECTION -->
     <div class="product-section">
-        <h3>COD Transactions</h3>
-        <p class="section-subtitle">Transaksi Cash on Delivery yang sedang berlangsung</p>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
+            <div>
+                <h3>Riwayat COD Terakhir</h3>
+                <p class="section-subtitle">5 Transaksi terakhir Anda (Sebagai Pembeli & Penjual)</p>
+            </div>
+            <a href="../cod_transaction/history.php" style="text-decoration:none; color: #2196f3; font-weight:600;">Lihat Semua &rarr;</a>
+        </div>
 
         <?php
-        // Get COD transactions
+        // LOGIC QUERY TRANSAKSI YANG DIPERBAIKI
+        // Mengambil transaksi dimana user terlibat (baik sebagai buyer MAUPUN seller)
         $stmt = $pdo->prepare("
-    SELECT 
-        ct.*,
-        p.name AS product_name,
-        a.name AS buyer_name,
-        pi.url AS product_image
-    FROM cod_transactions ct
-    JOIN products p ON ct.product_id = p.id
-    JOIN accounts a ON ct.buyer_id = a.id
-    LEFT JOIN product_images pi 
-        ON p.id = pi.product_id AND pi.is_primary = 1
-    WHERE 
-        (? = 'seller' AND ct.seller_id = ?)
-        OR
-        (? = 'buyer' AND ct.buyer_id = ?)
-    ORDER BY ct.created_at DESC
-    LIMIT 5
-");
-        $stmt->execute([
-            $user['role'],
-            $user_id,
-            $user['role'],
-            $user_id
-        ]);
+            SELECT 
+                ct.*,
+                p.name AS product_name,
+                
+                -- Ambil gambar produk utama
+                (SELECT url FROM product_images WHERE product_id = p.id ORDER BY is_primary DESC LIMIT 1) as product_image,
+                
+                -- Info Lawan Transaksi
+                b.name AS buyer_name,
+                s.name AS seller_name
+                
+            FROM cod_transactions ct
+            JOIN products p ON ct.product_id = p.id
+            JOIN accounts b ON ct.buyer_id = b.id
+            JOIN accounts s ON ct.seller_id = s.id
+            WHERE ct.buyer_id = ? OR ct.seller_id = ?
+            ORDER BY ct.created_at DESC
+            LIMIT 5
+        ");
+        
+        $stmt->execute([$user_id, $user_id]);
         $transactions = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
         ?>
 
         <?php if (count($transactions) > 0): ?>
             <div class="transaction-list">
                 <?php foreach ($transactions as $trans): ?>
+                    <?php 
+                        // Tentukan peran kita
+                        $is_buyer = ($trans['buyer_id'] == $user_id);
+                        $role_label = $is_buyer ? 'Pembeli' : 'Penjual';
+                        $partner_name = $is_buyer ? $trans['seller_name'] : $trans['buyer_name'];
+                        
+                        // Gambar Produk
+                        $prod_img = !empty($trans['product_image']) 
+                            ? "../../uploads/products/" . $trans['product_image'] 
+                            : "../../assets/images/no-image.png";
+                    ?>
+                    
                     <div class="transaction-card">
                         <div class="transaction-image">
-                            <?php
-                            $prod_img = !empty($trans['product_image'])
-                                ? "../../uploads/products/" . $trans['product_image']
-                                : "../../assets/images/default-product.png";
-                            ?>
-                            <img src="<?= htmlspecialchars($prod_img) ?>" alt="Product">
+                            <img src="<?= htmlspecialchars($prod_img) ?>" alt="Produk">
                         </div>
 
                         <div class="transaction-info">
-                            <h4><?= htmlspecialchars($trans['product_name']) ?></h4>
-                            <div class="transaction-price">Rp <?= number_format($trans['total'], 0, ',', '.') ?></div>
+                            <div style="display:flex; justify-content:space-between;">
+                                <h4><?= htmlspecialchars($trans['product_name']) ?></h4>
+                                <small style="color: #999;"><?= formatTgl($trans['created_at']) ?></small>
+                            </div>
+                            
+                            <div class="transaction-price">
+                                Rp <?= number_format($trans['total'], 0, ',', '.') ?>
+                            </div>
 
                             <div class="transaction-meta">
-                                <div class="buyer-info">
-                                    <img src="../../assets/images/icon.png" alt="Buyer" class="buyer-avatar">
-                                    <?= htmlspecialchars($trans['buyer_name']) ?>
-                                </div>
+                                <span style="margin-right: 10px; background: #f0f0f0; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem;">
+                                    Anda: <strong><?= $role_label ?></strong>
+                                </span>
+                                <span>
+                                    <i class="fas fa-user"></i> <?= htmlspecialchars($partner_name) ?>
+                                </span>
                             </div>
 
-                            <div class="meeting-info">
-                                <strong>Titik Temu:</strong> <?= htmlspecialchars($trans['meeting_location']) ?><br>
-                                <small><?= date('d M Y', strtotime($trans['meeting_time'])) ?></small>
-                            </div>
+                            <?php if(!empty($trans['meeting_time'])): ?>
+                                <div style="margin-top: 5px; font-size: 0.8rem; color: #555;">
+                                    <i class="fas fa-clock"></i> Jadwal: <?= formatTgl($trans['meeting_time']) ?> WIB
+                                </div>
+                            <?php endif; ?>
                         </div>
 
                         <div class="transaction-status">
                             <?php
-                            $status_class = '';
-                            $status_text = '';
-
-                            switch ($trans['status']) {
-                                case 'pending':
-                                    $status_class = 'status-pending';
-                                    $status_text  = 'Menunggu';
-                                    break;
-
-                                case 'approved':
-                                    $status_class = 'status-approved';
-                                    $status_text  = 'Disetujui';
-                                    break;
-
-                                case 'completed':
-                                    $status_class = 'status-completed';
-                                    $status_text  = 'Selesai';
-                                    break;
-
-                                case 'cancelled':
-                                    $status_class = 'status-cancelled';
-                                    $status_text  = 'Dibatalkan';
-                                    break;
-                            }
-
+                                // Mapping status untuk class CSS
+                                $s = $trans['status'];
+                                $css_class = 'status-' . $s; 
                             ?>
-                            <span class="status-badge <?= $status_class ?>"><?= $status_text ?></span>
+                            <span class="status-badge <?= $css_class ?>">
+                                <?= strtoupper($s) ?>
+                            </span>
+                            <br>
+                            <a href="../cod_transaction/detail.php?id=<?= $trans['id'] ?>" style="display:inline-block; margin-top:5px; font-size:0.75rem; text-decoration:none; color:#2196f3;">Detail</a>
                         </div>
                     </div>
                 <?php endforeach; ?>
             </div>
         <?php else: ?>
-            <div class="empty">
-                <p>Belum ada transaksi COD</p>
+            <div class="empty-state">
+                <img src="../../assets/images/empty-box.png" alt="" style="width: 50px; opacity: 0.5; margin-bottom: 10px;">
+                <p>Belum ada riwayat transaksi COD.</p>
+                <a href="../index.php" class="btn btn-primary" style="font-size: 0.8rem;">Mulai Belanja</a>
             </div>
         <?php endif; ?>
     </div>
 
-
-    <br>
-
-
-    <br>
-    <br>
+    <br><br><br>
+    
+    <?php include "../components/footer.php"; // Sesuaikan path footer jika perlu ?>
 </body>
-<?php include __DIR__ . '/../components/footer.php'; ?>
-
 </html>

@@ -115,7 +115,7 @@ $logo  = file_exists($logoA) ? $logoA : $logoB;
                     <?php endif; ?>
                 </a>
 
-                <a href="../chat/chat.php" class="cm-icon-btn">
+                <a href="../chat/index.php" class="cm-icon-btn">
                     <i class="fa-solid fa-message"></i>
                     <?php if ($chat_total): ?>
                         <span class="cm-badge"><?= $chat_total ?></span>

@@ -1,4 +1,5 @@
-.chat-wrapper {
+/* ===== WRAPPER ===== */
+.chat-box {
     max-width: 900px;
     margin: 40px auto;
     background: #fff;
@@ -7,17 +8,35 @@
     display: flex;
     flex-direction: column;
     height: 85vh;
+    padding: 0;
 }
 
-.chat-top {
+/* ===== HEADER ===== */
+.chat-box > div:first-child {
     padding: 20px 30px;
     border-bottom: 1px solid #eee;
     display: flex;
+    justify-content: space-between;
     align-items: center;
-    gap: 15px;
 }
 
-.chat-messages {
+/* ===== PRODUCT PREVIEW ===== */
+.product-preview {
+    display: flex;
+    gap: 15px;
+    padding: 15px 30px;
+    border-bottom: 1px solid #f1f1f1;
+}
+
+.product-preview img {
+    width: 70px;
+    height: 70px;
+    object-fit: cover;
+    border-radius: 12px;
+}
+
+/* ===== MESSAGE AREA ===== */
+.chat-box > div:nth-child(3) {
     flex: 1;
     padding: 25px;
     overflow-y: auto;
@@ -26,48 +45,149 @@
     gap: 12px;
 }
 
+/* ===== CHAT BUBBLE ===== */
 .bubble {
     padding: 12px 18px;
     border-radius: 18px;
     max-width: 70%;
     font-size: 14px;
+    line-height: 1.5;
 }
 
+.bubble .sender {
+    font-size: 11px;
+    opacity: .7;
+    margin-bottom: 4px;
+}
+
+/* LAWAN */
 .bubble.other {
     background: #f1f1f1;
     align-self: flex-start;
 }
 
+/* KITA */
+.bubble.me {
+    align-self: flex-end;
+    color: #fff;
+}
+
+/* BUYER */
 .bubble.me.buyer {
     background: #00C853;
-    color: #fff;
-    align-self: flex-end;
 }
 
+/* SELLER */
 .bubble.me.seller {
     background: #2563eb;
-    color: #fff;
-    align-self: flex-end;
 }
 
-.chat-input {
+/* ===== INPUT ===== */
+.chat-box form[action="send.php"] {
     display: flex;
     padding: 20px;
     border-top: 1px solid #eee;
+    gap: 10px;
 }
 
-.chat-input input {
+.chat-box form[action="send.php"] input {
     flex: 1;
-    padding: 14px;
+    padding: 14px 18px;
     border-radius: 30px;
     border: 1px solid #ddd;
+    outline: none;
 }
 
-.chat-input button {
-    margin-left: 10px;
-    padding: 0 22px;
+.chat-box form[action="send.php"] button {
+    width: 48px;
+    height: 48px;
     border-radius: 50%;
     background: #00C853;
     color: #fff;
     border: none;
+    cursor: pointer;
+}
+
+/* ===== CHAT LIST WRAPPER ===== */
+.chat-box {
+    max-width: 900px;
+    margin: 40px auto;
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0,0,0,.06);
+    padding: 10px 0;
+}
+
+.chat-item {
+    display: flex;
+    gap: 15px;
+    padding: 18px 30px;
+    text-decoration: none;
+    color: #111;
+    border-bottom: 1px solid #f1f1f1;
+}
+
+.chat-item:hover {
+    background: #f9fafb;
+}
+
+.chat-avatar {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+}
+
+.avatar-text {
+    background: #00C853;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 18px;
+}
+
+.chat-content {
+    flex: 1;
+}
+
+.chat-top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.chat-name {
+    font-weight: 600;
+    font-size: 15px;
+}
+
+.chat-time {
+    font-size: 12px;
+    color: #999;
+}
+
+.chat-preview {
+    margin-top: 4px;
+    font-size: 14px;
+    color: #555;
+}
+
+.tag {
+    display: inline-block;
+    margin-top: 6px;
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 12px;
+    background: #e8f5e9;
+    color: #00c853;
+}
+
+.chat-product {
+    font-size: 12px;
+    color: #777;
+    margin-top: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }

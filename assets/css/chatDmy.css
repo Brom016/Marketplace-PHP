@@ -1,153 +1,52 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: Inter, sans-serif;
-}
-
-body {
-    background: #f5f7fa;
-}
-
-/* WRAPPER */
-.chat-wrapper {
+.chat-box {
     max-width: 900px;
-    margin: 40px auto;
-    background: #fff;
-    border-radius: 24px;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.05);
-    overflow: hidden;
+    margin: 20px auto;
 }
 
-/* HEADER */
-.chat-top {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    padding: 24px 32px;
-    border-bottom: 1px solid #eee;
+.room-item {
+    padding: 12px;
+    border: 1px solid #ddd;
+    margin-bottom: 10px;
+    border-radius: 6px;
 }
 
-.back-icon {
-    font-size: 22px;
-    text-decoration: none;
-    color: #333;
-}
-
-.chat-title {
+.product-preview {
     display: flex;
     gap: 12px;
-    align-items: center;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    margin-bottom: 15px;
 }
 
-.logo-box {
-    width: 46px;
-    height: 46px;
-    background: #00C853;
-    border-radius: 14px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #fff;
-    font-weight: bold;
-}
-
-/* PRODUCT CONTEXT */
-.product-context {
-    display: flex;
-    gap: 16px;
-    padding: 16px 32px;
-    border-bottom: 1px solid #eee;
-    background: #f9fafb;
-}
-
-.product-context img {
-    width: 70px;
-    height: 70px;
-    border-radius: 10px;
+.product-preview img {
+    width: 80px;
+    height: 80px;
     object-fit: cover;
 }
 
-.prod-info {
-    flex: 1;
-}
-
-.prod-info .price {
-    color: #00C853;
-    font-weight: 700;
-    margin-top: 4px;
-}
-
-.buy-btn {
-    display: inline-block;
-    margin-top: 8px;
-    padding: 8px 14px;
-    background: #00C853;
-    color: white;
-    border-radius: 8px;
-    text-decoration: none;
-    font-size: 13px;
-}
-
-/* CHAT MESSAGES */
-.chat-messages {
-    padding: 24px 32px;
-    min-height: 300px;
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-}
-
 .bubble {
+    padding: 10px;
+    border-radius: 8px;
+    margin: 6px 0;
     max-width: 70%;
-    padding: 12px 16px;
-    border-radius: 16px;
-    font-size: 14px;
-    line-height: 1.5;
 }
 
-/* OTHER */
-.bubble.other {
-    background: #f0f0f0;
-    align-self: flex-start;
-}
-
-/* ME */
 .bubble.me {
-    align-self: flex-end;
+    background: #dcf8c6;
+    margin-left: auto;
 }
 
-/* ROLE DIFFERENTIATION */
-.bubble.me.buyer {
-    background: #00C853;
-    color: white;
+.bubble.other {
+    background: #eee;
 }
 
-.bubble.me.seller {
-    background: #e3f2fd;
-    color: #111;
+.sender {
+    font-size: 12px;
+    font-weight: bold;
 }
 
-/* INPUT */
-.chat-input {
-    display: flex;
-    padding: 16px 32px;
-    border-top: 1px solid #eee;
-    gap: 10px;
-}
-
-.chat-input input {
-    flex: 1;
-    padding: 12px 16px;
-    border-radius: 20px;
-    border: 1px solid #ddd;
-}
-
-.chat-input button {
-    background: #00C853;
-    border: none;
-    color: white;
-    width: 46px;
-    border-radius: 50%;
-    cursor: pointer;
+.locked {
+    color: red;
+    font-weight: bold;
 }

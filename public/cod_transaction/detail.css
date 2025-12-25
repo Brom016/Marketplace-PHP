@@ -1,0 +1,247 @@
+body {
+    margin: 0;
+    background: #f5f7f6;
+    font-family: "Inter", sans-serif;
+    overflow-x: hidden; /* MATIKAN GESER X */
+}
+
+
+.detail-container {
+    max-width: 900px;
+    margin: 40px auto;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+.back-link {
+    display: inline-block;
+    margin-bottom: 20px;
+    text-decoration: none;
+    color: #666;
+}
+
+.detail-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,.08);
+    overflow: hidden;
+}
+
+.detail-header {
+    background: #f8f9fa;
+    padding: 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.detail-body {
+    padding: 25px;
+    display: grid;
+    grid-template-columns: 3fr 2fr;
+    gap: 30px;
+}
+
+.product-preview {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.product-preview img {
+    width: 90px;
+    height: 90px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+}
+
+.info-group {
+    margin-bottom: 20px;
+}
+
+.info-group label {
+    font-size: .75rem;
+    color: #888;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+.price {
+    font-size: 1.6rem;
+    color: #2196f3;
+    font-weight: bold;
+}
+
+.meeting-box {
+    background: #f0f7ff;
+    border-radius: 10px;
+    padding: 20px;
+}
+
+.detail-footer {
+    padding: 20px;
+    text-align: right;
+    border-top: 1px solid #eee;
+}
+
+.detail-footer button {
+    background: #333;
+    color: #fff;
+    padding: 10px 18px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+/* STATUS BADGE */
+.badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: .75rem;
+    font-weight: bold;
+}
+
+.badge-pending { background: #fff3cd; color: #856404; }
+.badge-waiting { background: #cce5ff; color: #004085; }
+.badge-completed { background: #d4edda; color: #155724; }
+.badge-cancelled { background: #f8d7da; color: #721c24; }
+.badge-rejected { background: #e2e3e5; color: #383d41; }
+
+@media (max-width: 768px) {
+    .detail-body {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+/* index */
+
+
+.container {
+    max-width: 1000px;
+    margin: 40px auto;
+    padding: 0 20px;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+.page-header {
+    margin: 40px auto;
+}
+
+.card {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 6px 20px rgba(0,0,0,.06);
+    margin-bottom: 40px;
+}
+
+.table-responsive {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 700px;
+}
+
+th {
+    background: #f8f9fa;
+    padding: 15px;
+    font-weight: 600;
+    text-align: left;
+    border-bottom: 2px solid #eee;
+}
+
+td {
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+    vertical-align: middle;
+}
+
+tr:hover {
+    background: #fcfcfc;
+}
+
+.product-name {
+    font-weight: 600;
+    color: #333;
+}
+
+.product-time {
+    font-size: .85rem;
+    color: #888;
+    margin-top: 4px;
+}
+
+.role-badge {
+    font-size: .75rem;
+    font-weight: bold;
+    padding: 5px 10px;
+    border-radius: 4px;
+}
+
+.role-badge.buyer {
+    background: #fce4ec;
+    color: #d63384;
+}
+
+.role-badge.seller {
+    background: #f3e5f5;
+    color: #6f42c1;
+}
+
+.price {
+    font-family: monospace;
+    font-size: 1rem;
+}
+
+.status-badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: .75rem;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+/* STATUS COLORS */
+.status-badge.pending {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.status-badge.waiting {
+    background: #cce5ff;
+    color: #004085;
+}
+
+.status-badge.completed {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status-badge.cancelled {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.status-badge.rejected {
+    background: #e2e3e5;
+    color: #383d41;
+}
+
+.btn-detail {
+    text-decoration: none;
+    color: #0d6efd;
+    font-weight: 600;
+}
+
+.btn-detail:hover {
+    text-decoration: underline;
+}
+
+.empty-state {
+    padding: 40px;
+    text-align: center;
+    color: #888;
+}
