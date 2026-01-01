@@ -10,7 +10,6 @@ $user_id = $_SESSION['user_id'];
 
 /* =======================
    AMBIL DATA USER LOGIN
-   (SESUAI DATABASE)
 ======================= */
 $stmtUser = $pdo->prepare("
     SELECT id, name, role
@@ -21,15 +20,13 @@ $stmtUser->execute([$user_id]);
 $user = $stmtUser->fetch(PDO::FETCH_ASSOC);
 
 if (!$user) {
-    // safety net, harusnya gak kejadian
     session_destroy();
     header("Location: ../login.php");
     exit;
 }
 
 /* =======================
-   PROFILE PIC (STATIC)
-   DATABASE TIDAK PUNYA
+   PROFILE PIC
 ======================= */
 $profile_pic = "../../assets/images/default-user.png";
 

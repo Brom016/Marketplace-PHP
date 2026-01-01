@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marketplace Mahasiswa - Presentasi</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+            background: #0a0a0a;
+        }
+
+        /* Animated stars background */
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 3s infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.5); }
+        }
+
+        .slide {
+            position: relative;
+            z-index: 2;
+        }
+
+        .slide-container {
+            scroll-snap-type: y mandatory;
+            overflow-y: scroll;
+            height: 100vh;
+        }
+
+        .slide {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            scroll-snap-align: start;
+            position: relative;
+        }
+
+        /* Slide Backgrounds - Dark Theme */
+        .slide-1 {
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+        }
+
+        .slide-2 {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+        }
+
+        .slide-3 {
+            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+        }
+
+        .slide-4 {
+            background: linear-gradient(135deg, #141e30 0%, #243b55 100%);
+        }
+
+        .slide-5 {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        }
+
+        .slide-6 {
+            background: linear-gradient(135deg, #232526 0%, #414345 100%);
+        }
+
+        .slide-7 {
+            background: linear-gradient(135deg, #1f1c2c 0%, #928dab 100%);
+        }
+
+        .slide-8 {
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+        }
+
+        .slide-9 {
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+        }
+
+        .content {
+            max-width: 1200px;
+            width: 100%;
+            color: white;
+            text-align: center;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            font-size: 4em;
+            margin-bottom: 20px;
+            text-shadow: 0 0 20px rgba(100,255,218,0.5), 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        h2 {
+            font-size: 3em;
+            margin-bottom: 30px;
+            text-shadow: 0 0 15px rgba(100,255,218,0.4), 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        h3 {
+            font-size: 2em;
+            margin-bottom: 20px;
+            color: #64ffda;
+        }
+
+        p {
+            font-size: 1.3em;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .subtitle {
+            font-size: 1.5em;
+            opacity: 0.9;
+            margin-bottom: 30px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .feature-card {
+            background: rgba(0,0,0,0.4);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 15px;
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            background: rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.2);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+        }
+
+        .feature-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+            filter: drop-shadow(0 0 10px rgba(100,255,218,0.5));
+        }
+
+        .timeline {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            margin-top: 40px;
+            gap: 20px;
+        }
+
+        .timeline-item {
+            background: rgba(0,0,0,0.3);
+            backdrop-filter: blur(10px);
+            padding: 25px;
+            border-radius: 15px;
+            border: 2px solid rgba(255,255,255,0.15);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            flex: 1;
+            min-width: 200px;
+            transition: all 0.3s ease;
+        }
+
+        .timeline-item:hover {
+            background: rgba(0,0,0,0.5);
+            border: 2px solid rgba(255,255,255,0.3);
+            transform: scale(1.05);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+        }
+
+        .timeline-week {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #64ffda;
+            text-shadow: 0 0 10px rgba(100,255,218,0.5);
+        }
+
+        .tech-stack {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 25px;
+            margin-top: 40px;
+        }
+
+        .tech-badge {
+            background: rgba(0,0,0,0.4);
+            backdrop-filter: blur(10px);
+            padding: 20px 35px;
+            border-radius: 50px;
+            font-size: 1.3em;
+            font-weight: bold;
+            border: 2px solid rgba(255,255,255,0.15);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+        }
+
+        .tech-badge:hover {
+            background: rgba(0,0,0,0.6);
+            border: 2px solid rgba(255,255,255,0.3);
+            transform: scale(1.1);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateX(-50%) translateY(0);
+            }
+            40% {
+                transform: translateX(-50%) translateY(-20px);
+            }
+            60% {
+                transform: translateX(-50%) translateY(-10px);
+            }
+        }
+
+        .arrow-down {
+            font-size: 2em;
+            color: #64ffda;
+            text-shadow: 0 0 10px rgba(100,255,218,0.7);
+        }
+
+        .architecture-diagram {
+            background: rgba(0,0,0,0.3);
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 20px;
+            margin-top: 40px;
+            border: 2px solid rgba(255,255,255,0.1);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+
+        .layer {
+            background: rgba(0,0,0,0.4);
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 10px;
+            border-left: 5px solid #64ffda;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+
+        .layer:hover {
+            background: rgba(0,0,0,0.5);
+            transform: translateX(10px);
+            box-shadow: 0 6px 24px rgba(0,0,0,0.4);
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        li {
+            font-size: 1.2em;
+            margin: 10px 0;
+            padding-left: 30px;
+            position: relative;
+        }
+
+        li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+            color: #64ffda;
+            text-shadow: 0 0 5px rgba(100,255,218,0.5);
+        }
+
+        .methodology-box {
+            background: rgba(0,0,0,0.4);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 15px;
+            margin-top: 30px;
+            border: 2px solid rgba(255,255,255,0.15);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            text-align: left;
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 2.5em; }
+            h2 { font-size: 2em; }
+            h3 { font-size: 1.5em; }
+            p { font-size: 1.1em; }
+            .subtitle { font-size: 1.2em; }
+        }
+    </style>
+</head>
+<body>
+    <div class="stars" id="stars"></div>
+    <div class="slide-container">
+        <!-- Slide 1: Cover -->
+        <div class="slide slide-1">
+            <div class="content">
+                <h1>🛒 MARKETPLACE MAHASISWA</h1>
+                <p class="subtitle">Platform Jual Beli Online untuk Komunitas Kampus</p>
+                <p style="font-size: 1.2em; margin-top: 40px;">Dikembangkan dengan Metode Waterfall</p>
+                <p style="font-size: 1em; opacity: 0.8;">Durasi: 2 Bulan</p>
+            </div>
+            <div class="scroll-indicator">
+                <div class="arrow-down">↓</div>
+            </div>
+        </div>
+
+        <!-- Slide 2: Tentang Proyek -->
+        <div class="slide slide-2">
+            <div class="content">
+                <h2>📋 Tentang Proyek</h2>
+                <div class="methodology-box">
+                    <h3>Marketplace Mahasiswa</h3>
+                    <p>Sebuah platform e-commerce berbasis web yang dirancang khusus untuk memfasilitasi transaksi jual beli antar mahasiswa dalam satu lingkungan kampus dengan sistem Cash on Delivery (COD).</p>
+                    <br>
+                    <p><strong>Tujuan:</strong> Menyediakan wadah yang aman, mudah, dan terpercaya untuk mahasiswa dalam melakukan transaksi barang dengan sistem pembayaran tunai langsung saat bertemu.</p>
+                    <br>
+                    <p><strong>Target Pengguna:</strong> Mahasiswa dalam satu kampus yang ingin menjual atau membeli barang bekas, buku, alat tulis, dan kebutuhan kampus lainnya.</p>
+                    <br>
+                    <p><strong>Cakupan Area:</strong> Terbatas untuk lingkungan kampus saja, memudahkan pertemuan COD dan membangun kepercayaan antar sesama mahasiswa.</p>
+                </div>
+            </div>
+            <div class="scroll-indicator">
+                <div class="arrow-down">↓</div>
+            </div>
+        </div>
+
+        <!-- Slide 3: Metode Waterfall -->
+        <div class="slide slide-3">
+            <div class="content">
+                <h2>🌊 Metode Waterfall</h2>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-week">Minggu 1-2</div>
+                        <h3>Requirements</h3>
+                        <p>Analisis kebutuhan sistem, pengumpulan requirement, dan riset kebutuhan mahasiswa</p>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-week">Minggu 3-4</div>
+                        <h3>Design</h3>
+                        <p>Perancangan database, UI/UX, arsitektur sistem, dan flow chat/nego</p>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-week">Minggu 5-7</div>
+                        <h3>Implementation</h3>
+                        <p>Pengembangan kode, fitur chat, sistem nego, dan integrasi fitur</p>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-week">Minggu 8</div>
+                        <h3>Testing</h3>
+                        <p>Pengujian sistem, testing COD flow, dan deployment</p>
+                    </div>
+                </div>
+            </div>
+            <div class="scroll-indicator">
+                <div class="arrow-down">↓</div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Fitur Utama -->
+        <div class="slide slide-4">
+            <div class="content">
+                <h2>⭐ Fitur Utama</h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">👤</div>
+                        <h3>Manajemen User</h3>
+                        <p>Registrasi, login, dan profil mahasiswa dengan verifikasi kampus</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📦</div>
+                        <h3>Manajemen Produk</h3>
+                        <p>CRUD produk dengan upload gambar dan deskripsi lengkap</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">💬</div>
+                        <h3>Sistem Chat</h3>
+                        <p>Chat real-time antara pembeli dan penjual untuk komunikasi</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🤝</div>
+                        <h3>Sistem Negosiasi</h3>
+                        <p>Fitur nego harga langsung dalam chat dengan approval penjual</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">💵</div>
+                        <h3>COD (Cash on Delivery)</h3>
+                        <p>Pembayaran tunai saat bertemu di lokasi kampus</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">✅</div>
+                        <h3>Konfirmasi Penerimaan</h3>
+                        <p>User konfirmasi telah menerima barang untuk menyelesaikan transaksi</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">👨‍💼</div>
+                        <h3>Panel Admin</h3>
+                        <p>Dashboard monitoring transaksi dan manajemen user kampus</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📊</div>
+                        <h3>Laporan</h3>
+                        <p>Report transaksi COD dan statistik penjualan</p>
+                    </div>
+                </div>
+            </div>
+            <div class="scroll-indicator">
+                <div class="arrow-down">↓</div>
+            </div>
+        </div>
+
+        <!-- Slide 5: Transaction Flow -->
+        <div class="slide slide-5">
+            <div class="content">
+                <h2>🔄 Alur Transaksi COD</h2>
+                <div class="methodology-box" style="text-align: center;">
+                    <div class="timeline" style="flex-direction: column; gap: 20px;">
+                        <div class="timeline-item" style="min-width: 100%;">
+                            <div class="timeline-week">Step 1</div>
+                            <h3>💬 Chat & Negosiasi</h3>
+                            <p>Pembeli chat penjual untuk menanyakan detail produk dan nego harga</p>
+                        </div>
+                        <div style="font-size: 2em; color: #64ffda;">↓</div>
+                        <div class="timeline-item" style="min-width: 100%;">
+                            <div class="timeline-week">Step 2</div>
+                            <h3>✅ Persetujuan Penjual</h3>
+                            <p>Penjual menyetujui harga dan mengkonfirmasi kesepakatan deal</p>
+                        </div>
+                        <div style="font-size: 2em; color: #64ffda;">↓</div>
+                        <div class="timeline-item" style="min-width: 100%;">
+                            <div class="timeline-week">Step 3</div>
+                            <h3>🤝 Pertemuan COD</h3>
+                            <p>Pembeli dan penjual bertemu di lokasi kampus untuk transaksi tunai</p>
+                        </div>
+                        <div style="font-size: 2em; color: #64ffda;">↓</div>
+                        <div class="timeline-item" style="min-width: 100%;">
+                            <div class="timeline-week">Step 4</div>
+                            <h3>✔️ Konfirmasi Penerimaan</h3>
+                            <p>Pembeli klik tombol "Sudah Menerima Barang" untuk menyelesaikan transaksi</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="scroll-indicator">
+                <div class="arrow-down">↓</div>
+            </div>
+        </div>
+
+        <!-- Slide 6: Tech Stack -->
+        <div class="slide slide-6">
+            <div class="content">
+                <h2>💻 Teknologi yang Digunakan</h2>
+                <div class="tech-stack">
+                    <div class="tech-badge">PHP Native (69.8%)</div>
+                    <div class="tech-badge">MySQL</div>
+                    <div class="tech-badge">CSS (19.6%)</div>
+                    <div class="tech-badge">HTML (5.8%)</div>
+                    <div class="tech-badge">JavaScript (2.0%)</div>
+                    <div class="tech-badge">PHPMailer</div>
+                </div>
+                <div class="methodology-box" style="margin-top: 50px;">
+                    <h3>Kenapa PHP Native?</h3>
+                    <ul>
+                        <li>Kontrol penuh terhadap kode dan fitur custom</li>
+                        <li>Performa optimal untuk skala kampus</li>
+                        <li>Mudah di-deploy di hosting standar</li>
+                        <li>Cocok untuk pembelajaran fundamental web development</li>
+                        <li>Fleksibel untuk implementasi chat dan real-time features</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="scroll-indicator">
+                <div class="arrow-down">↓</div>
+            </div>
+        </div>
+
+        <!-- Slide 7: Struktur Proyek -->
+        <div class="slide slide-7">
+            <div class="content">
+                <h2>📁 Struktur Proyek</h2>
+                <div class="architecture-diagram">
+                    <div class="layer">
+                        <h3>📂 Admin</h3>
+                        <p>Panel administrator untuk manajemen sistem dan monitoring transaksi COD</p>
+                    </div>
+                    <div class="layer">
+                        <h3>📂 Public</h3>
+                        <p>Halaman front-end untuk pengguna, katalog produk, dan profil</p>
+                    </div>
+                    <div class="layer">
+                        <h3>📂 Includes</h3>
+                        <p>File konfigurasi, fungsi helper, dan sistem chat/negosiasi</p>
+                    </div>
+                    <div class="layer">
+                        <h3>📂 Assets</h3>
+                        <p>CSS, JavaScript, dan resources untuk UI/UX</p>
+                    </div>
+                    <div class="layer">
+                        <h3>📂 DB</h3>
+                        <p>Database schema, migrations, dan struktur data chat</p>
+                    </div>
+                    <div class="layer">
+                        <h3>📂 Uploads</h3>
+                        <p>Penyimpanan gambar produk dari penjual</p>
+                    </div>
+                    <div class="layer">
+                        <h3>📂 Report</h3>
+                        <p>Generate laporan transaksi COD dan statistik kampus</p>
+                    </div>
+                </div>
+            </div>
+            <div class="scroll-indicator">
+                <div class="arrow-down">↓</div>
+            </div>
+        </div>
+
+        <!-- Slide 8: Arsitektur Sistem -->
+        <div class="slide slide-8">
+            <div class="content">
+                <h2>🏗️ Arsitektur Sistem</h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <h3>Presentation Layer</h3>
+                        <p>HTML, CSS, JavaScript untuk tampilan UI yang responsif</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3>Application Layer</h3>
+                        <p>PHP Native untuk business logic dan pemrosesan data</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3>Data Layer</h3>
+                        <p>MySQL database untuk penyimpanan data terstruktur</p>
+                    </div>
+                </div>
+                <div class="methodology-box" style="margin-top: 40px;">
+                    <h3>Keamanan Sistem:</h3>
+                    <ul>
+                        <li>Password hashing untuk keamanan akun</li>
+                        <li>SQL injection prevention</li>
+                        <li>Session management yang aman</li>
+                        <li>Validasi input di client dan server side</li>
+                        <li>Verifikasi user khusus mahasiswa kampus</li>
+                    </ul>
+                    <br>
+                    <h3>Fitur Komunikasi:</h3>
+                    <ul>
+                        <li>Real-time chat system antara buyer-seller</li>
+                        <li>Sistem negosiasi harga dalam chat</li>
+                        <li>Notifikasi untuk pesan baru</li>
+                        <li>History chat tersimpan untuk transparansi</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="scroll-indicator">
+                <div class="arrow-down">↓</div>
+            </div>
+        </div>
+
+        <!-- Slide 9: Kesimpulan -->
+        <div class="slide slide-9">
+            <div class="content">
+                <h2>🎯 Kesimpulan</h2>
+                <div class="methodology-box">
+                    <h3>Pencapaian Proyek:</h3>
+                    <ul>
+                        <li>✅ Sistem marketplace COD lengkap selesai dalam 2 bulan</li>
+                        <li>✅ Implementasi metode Waterfall berjalan sesuai timeline 8 minggu</li>
+                        <li>✅ Fitur chat dan negosiasi berfungsi dengan baik</li>
+                        <li>✅ Sistem COD dan konfirmasi penerimaan terintegrasi sempurna</li>
+                        <li>✅ UI/UX yang user-friendly khusus untuk mahasiswa</li>
+                        <li>✅ Sistem keamanan yang memadai untuk lingkungan kampus</li>
+                    </ul>
+                    <br>
+                    <h3>Keunggulan Sistem:</h3>
+                    <ul>
+                        <li>Transaksi aman dengan pembayaran COD</li>
+                        <li>Negosiasi harga yang fleksibel</li>
+                        <li>Komunikasi langsung via chat</li>
+                        <li>Terbatas untuk kampus (meningkatkan kepercayaan)</li>
+                        <li>Konfirmasi penerimaan barang untuk transparansi</li>
+                    </ul>
+                    <br>
+                    <h3>Pengembangan Selanjutnya:</h3>
+                    <ul>
+                        <li>Sistem rating dan review produk/penjual</li>
+                        <li>Notifikasi push untuk chat dan transaksi</li>
+                        <li>Fitur bookmark/wishlist produk</li>
+                        <li>Integrasi dengan sistem akademik kampus</li>
+                        <li>Mobile application untuk kemudahan akses</li>
+                    </ul>
+                </div>
+                <h1 style="margin-top: 50px; font-size: 3em;">TERIMA KASIH! 🙏</h1>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Generate stars
+        const starsContainer = document.getElementById('stars');
+        for (let i = 0; i < 100; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            star.style.left = Math.random() * 100 + '%';
+            star.style.top = Math.random() * 100 + '%';
+            star.style.animationDelay = Math.random() * 3 + 's';
+            star.style.opacity = Math.random() * 0.7 + 0.3;
+            starsContainer.appendChild(star);
+        }
+
+        // Smooth scroll indicator hide on last slide
+        const slides = document.querySelectorAll('.slide');
+        const indicators = document.querySelectorAll('.scroll-indicator');
+        
+        const container = document.querySelector('.slide-container');
+        container.addEventListener('scroll', () => {
+            const scrollPosition = container.scrollTop;
+            const windowHeight = window.innerHeight;
+            
+            slides.forEach((slide, index) => {
+                const slideTop = slide.offsetTop;
+                if (scrollPosition >= slideTop - windowHeight / 2 && 
+                    scrollPosition < slideTop + windowHeight / 2) {
+                    if (index === slides.length - 1) {
+                        indicators[index].style.display = 'none';
+                    }
+                }
+            });
+        });
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            const container = document.querySelector('.slide-container');
+            if (e.key === 'ArrowDown' || e.key === 'PageDown') {
+                e.preventDefault();
+                container.scrollBy({ top: window.innerHeight, behavior: 'smooth' });
+            } else if (e.key === 'ArrowUp' || e.key === 'PageUp') {
+                e.preventDefault();
+                container.scrollBy({ top: -window.innerHeight, behavior: 'smooth' });
+            }
+        });
+    </script>
+</body>
+</html>
